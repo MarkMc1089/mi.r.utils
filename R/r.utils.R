@@ -39,7 +39,7 @@
 #' @importFrom stats na.omit lag setNames
 #' @importFrom rlang := sym as_name is_null .data as_function squash
 #' @importFrom tidyr replace_na complete nesting spread pivot_longer
-#' @importFrom NpsMoeTest nps_moe_test
+#' @importFrom sigtest nps_moe_test
 #' @importFrom DT datatable
 #' @importFrom plotly ggplotly config layout
 #' @importFrom ggplot2 ggplot aes geom_col labs element_blank scale_x_date scale_fill_manual theme_classic theme element_text

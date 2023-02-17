@@ -21,7 +21,7 @@ Imports:
     stats,
     rlang,
     tidyr,
-    NpsMoeTest,
+    sigtest,
     DT,
     plotly,
     ggplot2,
@@ -37,7 +37,7 @@ Imports:
     purrr,
     shinyWidgets
 Remotes:
-    nhsbsa-data-analytics/NpsMoeTest
+    nhsbsa-data-analytics/sigtest
 Suggests: 
     testthat (>= 3.0.0)
 Config/testthat/edition: 3
