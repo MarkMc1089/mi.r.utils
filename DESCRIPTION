@@ -1,13 +1,43 @@
 Package: r.utils
-Title: What the Package Does (One Line, Title Case)
+Title: Collection Of Functions, Particularly Ones Used In Shiny Apps
 Version: 0.0.0.9000
 Authors@R: 
     person("Mark", "McPherson", , "mark.mcpherson1@nhs.net", role = c("aut", "cre"))
-Description: What the package does (one paragraph).
+Description: Collects all the functions I use, mostly ones used in Shiny dashboards.
 License: MIT + file LICENSE
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.2.2
+Imports:
+    shiny,
+    glue,
+    htmltools,
+    zoo,
+    grDevices,
+    shinyBS,
+    dplyr,
+    highcharter,
+    lubridate,
+    stats,
+    rlang,
+    tidyr,
+    NpsMoeTest,
+    DT,
+    plotly,
+    ggplot2,
+    utils,
+    magrittr,
+    htmlwidgets,
+    fs,
+    stringr,
+    snakecase,
+    skimr,
+    withr,
+    rstudioapi,
+    purrr,
+    shinyWidgets
+Remotes:
+    nhsbsa-data-analytics/NpsMoeTest
 Suggests: 
     testthat (>= 3.0.0)
 Config/testthat/edition: 3
