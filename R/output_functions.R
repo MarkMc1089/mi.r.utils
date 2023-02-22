@@ -470,7 +470,7 @@ line_chart <- function(data, measure, measure_aux = NULL, targets = NULL,
       ),
       xDateFormat = "%b '%y",
       valueDecimals = 0,
-      pointFormat = glue(
+      pointFormat = paste(
         "<b>{series.name}:</b> {point.y}<br><b>Base: </b>{point.base}{point.lb}<br>"
       ),
       backgroundColor = "#E8EDEE",
@@ -1006,7 +1006,7 @@ stacked_vertical <- function(data, columns, responses, colours, legend_title,
       ) +
       scale_fill_manual(
         values = setNames(
-          colours[seq_along(length(responses))],
+          colours[seq_len(length(responses))],
           responses
         )
       ) +
@@ -1518,7 +1518,7 @@ horizontal_bar <- function(data, columns, responses, colour, chart_title = NULL,
       style = list(
         zIndex = 10000
       ),
-      pointFormat = glue(
+      pointFormat = paste(
         "<b>Percentage of group:</b> {point.y}%<br><b>Count in group: </b>{point.n}<br>"
       ),
       valueDecimals = 0,
