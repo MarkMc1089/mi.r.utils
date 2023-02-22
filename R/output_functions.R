@@ -6,12 +6,14 @@
 #' @return Character
 #' @export
 #'
-#' @examples \dontrun{}
+#' @examples \dontrun{
+#'
+#' }
 month_range_indicator <- function(month_range) {
   if (month_range[1] == month_range[2]) {
     format(month_range[1], format = "%B %Y")
   } else {
-    glue("{date_Ymd_to_bY(month_range[1]} - {date_Ymd_to_bY(month_range[2])}")
+    glue("{date_Ymd_to_bY(month_range[1])} - {date_Ymd_to_bY(month_range[2])}")
   }
 }
 
@@ -30,18 +32,20 @@ month_range_indicator <- function(month_range) {
 #' @return Highcharts object
 #' @export
 #'
-#' @examples \dontrun{}
+#' @examples \dontrun{
+#'
+#' }
 timeseries <- function(data, is.percentage = FALSE, units = "",
                        show_prev_fy = TRUE, prev_fy_start, prev_fy_end,
                        this_fy_start, this_fy_end) {
-
   data <- data %>%
     mutate(
-      .data$units := units,
-      .data$Value := as.numeric(.data$Value)
-    ) %>% suppressWarnings()
+      units = units,
+      Value = as.numeric(.data$Value)
+    ) %>%
+    suppressWarnings()
 
-  if (is.percentage) data <- data %>% mutate(.data$Value := .data$Value * 100)
+  if (is.percentage) data <- data %>% mutate(Value = .data$Value * 100)
 
   hc <- highchart()
 
@@ -135,7 +139,7 @@ timeseries <- function(data, is.percentage = FALSE, units = "",
           radius = 4.5,
           lineWidth = 0.75,
           lineColor = "#000",
-          symbol = 'circle'
+          symbol = "circle"
         )
       ),
       series = list(
@@ -169,26 +173,26 @@ timeseries <- function(data, is.percentage = FALSE, units = "",
 #' @return Highcharts object
 #' @export
 #'
-#' @examples \dontrun{}
-line_chart <- function (data, measure, measure_aux = NULL, targets = NULL,
-                        three_month_rolling = FALSE, low_base = 100,
-                        title = NULL, subtitle = NULL, month_col,
-                        last_valid_month_range_selection){
-
+#' @examples \dontrun{
+#'
+#' }
+line_chart <- function(data, measure, measure_aux = NULL, targets = NULL,
+                       three_month_rolling = FALSE, low_base = 100,
+                       title = NULL, subtitle = NULL, month_col,
+                       last_valid_month_range_selection) {
   validate(need(nrow(data) > 0, "No data for current filter selection!"))
 
-  if(!is.null(measure_aux)) {
+  if (!is.null(measure_aux)) {
     validate(
       need(
         nrow(measure_aux %>%
           filter(
             between(
-              month_col,
+              !!sym(month_col),
               last_valid_month_range_selection[1],
               last_valid_month_range_selection[2]
             )
-          )
-        ) > 0,
+          )) > 0,
         "No data for current filter selection!"
       )
     )
@@ -198,26 +202,25 @@ line_chart <- function (data, measure, measure_aux = NULL, targets = NULL,
     validate(
       need(
         month_diff(
-          min(data[month_col]) %m-% months(2), max(data[month_col])
+          min(data[[month_col]]) %m-% months(2), max(data[[month_col]])
         ) >= 3,
         "Less than 3 months of data!"
       )
     )
   }
 
-  measure_column <- switch(
-    measure,
+  measure_column <- switch(measure,
     "NPS" = "nps",
     "NES" = "nes"
   )
 
-  nps_groups = c(
+  nps_groups <- c(
     "Promoter" = "Promoters",
     "Passive" = "Passives",
     "Detractor" = "Detractors"
   )
 
-  nes_ratings = c(
+  nes_ratings <- c(
     "Extremely difficult",
     "Very difficult",
     "Fairly difficult",
@@ -229,118 +232,125 @@ line_chart <- function (data, measure, measure_aux = NULL, targets = NULL,
 
   chart <- data %>%
     {
-      if(!is.null(measure_aux))
-        select(., month_col) %>%
-        unique() %>%
-        left_join(
-          measure_aux
-        )
-      else
+      if (!is.null(measure_aux)) {
+        select(., !!month_col) %>%
+          unique() %>%
+          left_join(
+            measure_aux
+          )
+      } else {
         select(
           .,
-          month_col,
+          !!month_col,
           !!measure_column,
         ) %>%
-        na.omit(
-          !!measure_column
-        ) %>%
-        filter(
-          !!measure_column != "",
-        ) %>%
-        mutate(
-          .data$group := case_when(
-            !!sym(measure_column) %in% c(c(1:6), nes_ratings[1:3]) ~ "Detractor",
-            !!sym(measure_column) %in% c(c(7:8), nes_ratings[4:5]) ~ "Passive",
-            !!sym(measure_column) %in% c(c(9:10), nes_ratings[6:7]) ~ "Promoter"
+          na.omit(
+            !!measure_column
+          ) %>%
+          filter(
+            !!sym(measure_column) != "",
+          ) %>%
+          mutate(
+            group = case_when(
+              !!sym(measure_column) %in% c(c(1:6), nes_ratings[1:3]) ~ "Detractor",
+              !!sym(measure_column) %in% c(c(7:8), nes_ratings[4:5]) ~ "Passive",
+              !!sym(measure_column) %in% c(c(9:10), nes_ratings[6:7]) ~ "Promoter"
+            )
+          ) %>%
+          group_by(
+            !!sym(month_col),
+            .data$group
+          ) %>%
+          count() %>%
+          ungroup() %>%
+          full_join(
+            do.call(
+              expand.grid,
+              setNames(
+                list(unique(data[[month_col]]), names(nps_groups)),
+                list(month_col, "group")
+              )
+            ),
+            by = c(month_col, "group")
+          ) %>%
+          replace_na(list(n = 0)) %>%
+          complete(
+            .data$group,
+            nesting(!!sym(month_col)),
+            fill = list(n = 0)
+          ) %>%
+          select(
+            !!month_col,
+            .data$group,
+            n
+          ) %>%
+          spread(
+            .data$group,
+            n
           )
-        ) %>%
-        group_by(
-          month_col,
-          .data$group
-        ) %>%
-        count() %>%
-        ungroup() %>%
-        full_join(
-          expand.grid(
-            month_col := unique(data[month_col]),
-            .data$group := names(nps_groups)
-          ),
-          by = c(month_col, "group")
-        ) %>%
-        replace_na(list(n = 0)) %>%
-        complete(
-          .data$group,
-          nesting(month_col),
-          fill = list(n = 0)
-        ) %>%
-        select(
-          month_col,
-          .data$group,
-          n
-        ) %>%
-        spread(
-          .data$group,
-          n
-        )
+      }
     } %>%
     {
       if (!is.null(targets)) {
-        arrange(., month_col) %>%
+        arrange(., !!month_col) %>%
           left_join(
-            targets, by = "month_col"
+            targets,
+            by = month_col
           )
       } else {
         .
       }
-    }  %>%
+    } %>%
     mutate(
-      .data$base := .data$Detractor + .data$Passive + .data$Promoter,
-      .data$prevDetractor := lag(.data$Detractor, 1),
-      .data$prevPassive := lag(.data$Passive, 1),
-      .data$prevPromoter := lag(.data$Promoter, 1),
+      base = .data$Detractor + .data$Passive + .data$Promoter,
+      prevDetractor = lag(.data$Detractor, 1),
+      prevPassive = lag(.data$Passive, 1),
+      prevPromoter = lag(.data$Promoter, 1),
     ) %>%
     {
-      if(three_month_rolling)
+      if (three_month_rolling) {
         mutate(
           .,
-          .data$prevDetractor2 := lag(.data$Detractor, 2),
-          .data$prevPassive2 := lag(.data$Passive, 2),
-          .data$prevPromoter2 := lag(.data$Promoter, 2),
-          .data$det3MR := .data$Detractor + .data$prevDetractor + .data$prevDetractor2,
-          .data$pas3MR := .data$Passive + .data$prevPassive +  .data$prevPassive2,
-          .data$pro3MR := .data$Promoter + .data$prevPromoter + .data$prevPromoter2,
-          .data$prevdet3MR := lag(.data$det3MR, 1),
-          .data$prevpas3MR := lag(.data$pas3MR, 1),
-          .data$prevpro3MR := lag(.data$pro3MR, 1),
-          .data$base3MR := .data$Detractor + .data$Passive + .data$Promoter +
+          prevDetractor2 = lag(.data$Detractor, 2),
+          prevPassive2 = lag(.data$Passive, 2),
+          prevPromoter2 = lag(.data$Promoter, 2),
+          det3MR = .data$Detractor + .data$prevDetractor + .data$prevDetractor2,
+          pas3MR = .data$Passive + .data$prevPassive + .data$prevPassive2,
+          pro3MR = .data$Promoter + .data$prevPromoter + .data$prevPromoter2,
+          prevdet3MR = lag(.data$det3MR, 1),
+          prevpas3MR = lag(.data$pas3MR, 1),
+          prevpro3MR = lag(.data$pro3MR, 1),
+          base3MR = .data$Detractor + .data$Passive + .data$Promoter +
             .data$prevDetractor + .data$prevPassive + .data$prevPromoter +
             .data$prevDetractor2 + .data$prevPassive2 + .data$prevPromoter2,
-          .data$Score3MR := round(
-            ((.data$pro3MR / .data$base3MR) - (.data$det3MR / .data$base3MR)) * 100
+          Score3MR = round(
+            ((.data$pro3MR - .data$det3MR) / .data$base3MR) * 100
           )
         )
-      else
+      } else {
         mutate(
           .,
           !!sym(measure_column) := round(
-            ((.data$Promoter / .data$base) - (.data$Detractor / .data$base))  * 100
+            ((.data$Promoter - .data$Detractor) / base) * 100
           )
         )
+      }
     } %>%
     {
-      if(three_month_rolling)
+      if (three_month_rolling) {
         filter(
           .,
           !is.na(.data$Score3MR)
         )
-      else .
+      } else {
+        .
+      }
     }
 
   chart$score_sig <- ""
 
   if (three_month_rolling) {
-
-    for(i in 1:nrow(chart)) {
+    for (i in 1:nrow(chart)) {
       chart$score_sig[i] <- nps_moe_test(
         chart$pro3MR[i],
         chart$pas3MR[i],
@@ -351,13 +361,12 @@ line_chart <- function (data, measure, measure_aux = NULL, targets = NULL,
       )
     }
 
+    x <- sym(month_col)
     y <- sym("Score3MR")
     base <- sym("base3MR")
     name <- glue("{measure} (3MR)")
-
   } else {
-
-    for(i in 1:nrow(chart)) {
+    for (i in 1:nrow(chart)) {
       chart$score_sig[i] <- nps_moe_test(
         chart$Promoter[i],
         chart$Passive[i],
@@ -368,6 +377,7 @@ line_chart <- function (data, measure, measure_aux = NULL, targets = NULL,
       )
     }
 
+    x <- sym(month_col)
     y <- sym(measure_column)
     base <- sym("base")
     name <- measure
@@ -379,13 +389,13 @@ line_chart <- function (data, measure, measure_aux = NULL, targets = NULL,
 
   chart <- chart %>%
     mutate(
-      .data$score_sig := case_when(
+      score_sig = case_when(
         .data$score_sig == -1 ~ "<font color = '#DA291C', size = '3'>&#x25BC;</font>",
         .data$score_sig == +1 ~ "<font color = '#009639', size = '3'>&#x25B2;</font>",
         TRUE ~ ""
       ),
-      .data$maybe_lb := case_when(
-        !!base < .data$low_base ~ "*",
+      maybe_lb = case_when(
+        !!base < low_base ~ "*",
         TRUE ~ ""
       )
     )
@@ -397,7 +407,7 @@ line_chart <- function (data, measure, measure_aux = NULL, targets = NULL,
       color = "#005EB8",
       data = chart,
       hcaes(
-        x = month_col,
+        x = !!x,
         y = !!y,
         base = !!base,
         lb = .data$maybe_lb,
@@ -405,7 +415,7 @@ line_chart <- function (data, measure, measure_aux = NULL, targets = NULL,
       ),
       dataLabels = list(
         enabled = TRUE,
-        formatter = JS('function () { return this.point.y + this.point.lb + this.point.sig; }'),
+        formatter = JS("function () { return this.point.y + this.point.lb + this.point.sig; }"),
         useHTML = TRUE
       )
     ) %>%
@@ -418,7 +428,7 @@ line_chart <- function (data, measure, measure_aux = NULL, targets = NULL,
           data = chart,
           type = "line",
           hcaes(
-            x = month_col,
+            x = !!x,
             y = !!targets,
             base = !!base,
             lb = .data$maybe_lb,
@@ -497,24 +507,25 @@ line_chart <- function (data, measure, measure_aux = NULL, targets = NULL,
 #' @return Highcharts object
 #' @export
 #'
-#' @examples \dontrun{}
-nps_group_chart <- function (data, three_month_rolling = FALSE, low_base = 100,
-                             month_col) {
-
+#' @examples \dontrun{
+#'
+#' }
+nps_group_chart <- function(data, three_month_rolling = FALSE, low_base = 100,
+                            month_col) {
   validate(need(nrow(data) > 0, "No data for current filter selection!"))
 
   if (three_month_rolling) {
     validate(
       need(
         month_diff(
-          min(data[month_col]) %m-% months(2), max(data[month_col])
+          min(data[[month_col]]) %m-% months(2), max(data[[month_col]])
         ) >= 3,
         "Less than 3 months of data!"
       )
     )
   }
 
-  nps_groups = c(
+  nps_groups <- c(
     "Promoter" = "Promoters",
     "Passive" = "Passives",
     "Detractor" = "Detractors"
@@ -522,7 +533,7 @@ nps_group_chart <- function (data, three_month_rolling = FALSE, low_base = 100,
 
   chart <- data %>%
     select(
-      month_col,
+      !!month_col,
       .data$nps
     ) %>%
     na.omit(
@@ -532,33 +543,36 @@ nps_group_chart <- function (data, three_month_rolling = FALSE, low_base = 100,
       .data$nps != ""
     ) %>%
     mutate(
-      .data$group := case_when(
+      group = case_when(
         .data$nps %in% c(1:6) ~ "Detractor",
         .data$nps %in% c(7:8) ~ "Passive",
         .data$nps %in% c(9:10) ~ "Promoter"
       )
     ) %>%
     group_by(
-      month_col,
+      !!sym(month_col),
       .data$group
     ) %>%
     count() %>%
     ungroup() %>%
     complete(
       .data$group,
-      nesting(month_col),
+      nesting(!!sym(month_col)),
       fill = list(n = 0)
     ) %>%
     full_join(
-      expand.grid(
-        month_col := unique(data[month_col]),
-        .data$group := names(nps_groups)
+      do.call(
+        expand.grid,
+        setNames(
+          list(unique(data[[month_col]]), names(nps_groups)),
+          list(month_col, "group")
+        )
       ),
-      by = c("month_col", "group")
+      by = c(month_col, "group")
     ) %>%
     replace_na(list(n = 0)) %>%
     select(
-      month_col,
+      !!month_col,
       .data$group,
       n
     ) %>%
@@ -568,50 +582,56 @@ nps_group_chart <- function (data, three_month_rolling = FALSE, low_base = 100,
     ) %>%
     mutate(
       across(
-        !month_col,
-        ~ round(100 * ./(.data$Detractor + .data$Passive + .data$Promoter)),
+        -!!month_col,
+        ~ round(100 * . / (.data$Detractor + .data$Passive + .data$Promoter)),
         .names = "{.col}_perc"
       )
-    ) %>%
+    )
+
+  chart <- chart %>%
     {
-      if (three_month_rolling)
+      if (three_month_rolling) {
         mutate(
           .,
-          .data$prevDetrator := lag(.data$Detractor, 1),
-          .data$prevPassive := lag(.data$Passive, 1),
-          .data$prevPromoter := lag(.data$Promoter, 1),
-          .data$prevDetrator2 := lag(.data$Detractor, 2),
-          .data$prevPassive2 := lag(.data$Passive, 2),
-          .data$prevPromoter2 := lag(.data$Promoter, 2),
-          .data$det3MR := .data$Detractor + .data$prevDetrator + .data$prevDetrator2,
-          .data$pas3MR := .data$Passive + .data$prevPassive + .data$prevPassive2,
-          .data$pro3MR := .data$Promoter + .data$prevPromoter + .data$prevPromoter2,
-          .data$prevdet3MR := lag(.data$det3MR, 1),
-          .data$prevpas3MR := lag(.data$pas3MR, 1),
-          .data$prevpro3MR := lag(.data$pro3MR, 1),
-          .data$base3MR := .data$Detractor + .data$Passive + .data$Promoter +
-            .data$prevDetrator + .data$prevPassive + .data$prevPromoter +
-            .data$prevDetrator2 + .data$prevPassive2 + .data$prevPromoter2,
-          .data$Score3MR := round(
-            ((.data$pro3MR / .data$base3MR) - (.data$det3MR / .data$base3MR))*100
+          prevDetrator = lag(.data$Detractor, 1),
+          prevPassive = lag(.data$Passive, 1),
+          prevPromoter = lag(.data$Promoter, 1),
+          prevDetrator2 = lag(.data$Detractor, 2),
+          prevPassive2 = lag(.data$Passive, 2),
+          prevPromoter2 = lag(.data$Promoter, 2),
+          det3MR = .data$Detractor + .data$prevDetrator + .data$prevDetrator2,
+          pas3MR = .data$Passive + .data$prevPassive + .data$prevPassive2,
+          pro3MR = .data$Promoter + .data$prevPromoter + .data$prevPromoter2,
+          prevdet3MR = lag(.data$det3MR, 1),
+          prevpas3MR = lag(.data$pas3MR, 1),
+          prevpro3MR = lag(.data$pro3MR, 1),
+          base3MR = .data$Detractor + .data$Passive + .data$Promoter +
+            prevDetrator + .data$prevPassive + .data$prevPromoter +
+            prevDetrator2 + .data$prevPassive2 + .data$prevPromoter2,
+          Score3MR = round(
+            ((.data$pro3MR / .data$base3MR) - (.data$det3MR / .data$base3MR)) * 100
           ),
-          .data$Detractor := .data$det3MR,
-          .data$Passive := .data$pas3MR,
-          .data$Promoter := .data$pro3MR
+          Detractor = .data$det3MR,
+          Passive = .data$pas3MR,
+          Promoter = .data$pro3MR
         ) %>%
-        filter(
-          !is.na(.data$Score3MR)
-        )
-      else .
+          filter(
+            !is.na(.data$Score3MR)
+          )
+      } else {
+        .
+      }
     } %>%
     filter(
-      month_col %in% sort(
-        unique(data[month_col]), decreasing = TRUE)[1:3]
+      !!sym(month_col) %in% sort(
+        unique(data[[month_col]]),
+        decreasing = TRUE
+      )[1:3]
     )
 
   means <- data %>%
     select(
-      month_col,
+      !!month_col,
       .data$nps
     ) %>%
     na.omit(
@@ -621,72 +641,72 @@ nps_group_chart <- function (data, three_month_rolling = FALSE, low_base = 100,
       .data$nps != ""
     ) %>%
     group_by(
-      month_col
+      !!sym(month_col)
     ) %>%
     summarise(
-      .data$base := n(),
-      .data$mean := as.numeric(format(round(mean(.data$nps), 1), nsmall = 1))
-    ) %>%
+      base = n(),
+      mean = as.numeric(format(round(mean(.data$nps), 1), nsmall = 1))
+    )
+  means <- means %>%
     ungroup() %>%
     {
-      if (three_month_rolling)
+      if (three_month_rolling) {
         mutate(
           .,
-          .data$prevBase1 := lag(.data$base, 1),
-          .data$prevMean1 := lag(.data$mean, 1),
-          .data$prevBase2 := lag(.data$base, 2),
-          .data$prevMean2 := lag(.data$mean, 2),
+          prevBase1 = lag(.data$base, 1),
+          prevMean1 = lag(.data$mean, 1),
+          prevBase2 = lag(.data$base, 2),
+          prevMean2 = lag(.data$mean, 2),
         ) %>%
-        filter(
-          month_col %in% sort(
-            unique(data[month_col]), decreasing = TRUE)[1:3]
-        ) %>%
-        mutate(
-          .data$mean := (
+          filter(
+            !!sym(month_col) %in% sort(
+              unique(data[[month_col]]),
+              decreasing = TRUE
+            )[1:3]
+          ) %>%
+          mutate(
+            mean = (
               (.data$mean * .data$base) +
-              (.data$prevBase1 * .data$prevMean1) +
-              (.data$prevMean2 * .data$prevBase2)
+                (.data$prevMean1 * .data$prevBase1) +
+                (.data$prevMean2 * .data$prevBase2)
             ) /
-            (.data$base + .data$prevBase1 + .data$prevBase2),
-          .data$mean := as.numeric(format(round(.data$mean, 1), nsmall = 1)),
-          .data$base := (.data$base + .data$prevBase1 + .data$prevBase2),
-          .data$label := paste0(
-            format(
-              month_col,
-              format = "%b %y"
-            ),
-            "<br><b>Mean score: ", .data$mean, "</b>",
-            "<br><b>Base: ", .data$base, ifelse(.data$base < low_base, "*", ""), "</b>"
+              (.data$base + .data$prevBase1 + .data$prevBase2),
+            mean = as.numeric(format(round(.data$mean, 1), nsmall = 1)),
+            base = (.data$base + .data$prevBase1 + .data$prevBase2),
+            label = paste0(
+              format(!!sym(month_col), format = "%b %Y"),
+              "<br><b>Mean score: ", .data$mean, "</b>",
+              "<br><b>Base: ", .data$base, ifelse(.data$base < low_base, "*", ""), "</b>"
+            )
+          ) %>%
+          select(
+            month_col,
+            .data$base,
+            .data$mean,
+            .data$label
           )
-        ) %>%
-        select(
-          month_col,
-          .data$base,
-          .data$mean,
-          .data$label
-        )
-      else
+      } else {
         filter(
           .,
-          month_col %in% sort(
-            unique(data[month_col]), decreasing = TRUE)[1:3]
+          !!sym(month_col) %in% sort(
+            unique(data[[month_col]]),
+            decreasing = TRUE
+          )[1:3]
         ) %>%
-        mutate(
-          .data$label := paste0(
-            format(
-              month_col,
-              format = "%b %y"
-            ),
-            "<br><b>Mean score: ", .data$mean, "</b>",
-            "<br><b>Base: ", .data$base, ifelse(.data$base < low_base, "*", ""), "</b>"
+          mutate(
+            label = paste0(
+              format(!!sym(month_col), format = "%b %Y"),
+              "<br><b>Mean score: ", .data$mean, "</b>",
+              "<br><b>Base: ", .data$base, ifelse(.data$base < low_base, "*", ""), "</b>"
+            )
           )
-        )
+      }
     }
 
   chart <- chart %>%
     left_join(
       means,
-      by = "first_of_month"
+      by = month_col
     )
 
   highchart() %>%
@@ -771,7 +791,9 @@ nps_group_chart <- function (data, three_month_rolling = FALSE, low_base = 100,
 #' @return Datatable
 #' @export
 #'
-#' @examples \dontrun{}
+#' @examples \dontrun{
+#'
+#' }
 group_table <- function(data, comment_column, group_select = NULL,
                         comment_name_in_DT = "Reasons", month_col) {
   validate(need(nrow(data) > 0, "No data for current filter selection!"))
@@ -784,23 +806,25 @@ group_table <- function(data, comment_column, group_select = NULL,
     ) %>%
     na.omit() %>%
     filter(
-      !!comment_column != ""
+      !!sym(comment_column) != ""
     ) %>%
     {
       if (!is.null(group_select)) {
         mutate(
           .,
-          .data$group := case_when(
+          group = case_when(
             .data$nps %in% c(1:6) ~ "Detractor",
             .data$nps %in% c(7:8) ~ "Passive",
             .data$nps %in% c(9:10) ~ "Promoter"
           )
         )
-      } else .
+      } else {
+        .
+      }
     }
 
   if (!is.null(group_select)) {
-    if(group_select != "All"){
+    if (group_select != "All") {
       table <- table %>%
         filter(
           .data$group == group_select
@@ -826,11 +850,11 @@ group_table <- function(data, comment_column, group_select = NULL,
       }
     } %>%
     arrange(
-      desc(month_col),
+      desc(!!month_col),
       !!comment_column
     ) %>%
     mutate(
-      month_col := format(month_col, format = "%b %Y")
+      !!sym(month_col) := format(!!sym(month_col), format = "%b %Y")
     )
 
   colnames <- c("Month", comment_name_in_DT)
@@ -858,17 +882,18 @@ group_table <- function(data, comment_column, group_select = NULL,
 #' @return Plotly object
 #' @export
 #'
-#' @examples \dontrun{}
+#' @examples \dontrun{
+#'
+#' }
 stacked_vertical <- function(data, columns, responses, colours, legend_title,
                              low_base = 100, show_mean = FALSE, month_col) {
-
   validate(need(nrow(data) > 0, "No data for current filter selection!"))
 
   if (!isFALSE(show_mean)) {
     means <- data %>%
       select(
-        month_col,
-        all_of(show_mean)
+        !!month_col,
+        !!show_mean
       ) %>%
       na.omit(
         .data$nps
@@ -877,53 +902,53 @@ stacked_vertical <- function(data, columns, responses, colours, legend_title,
         .data$nps != ""
       ) %>%
       group_by(
-        month_col
+        !!sym(month_col)
       ) %>%
       summarise(
-        .data$base := n(),
-        .data$mean := as.numeric(format(round(mean(.data$nps), 1), nsmall = 1))
+        base = n(),
+        mean = as.numeric(format(round(mean(.data$nps), 1), nsmall = 1))
       )
   }
 
   ggplotly(
     data %>%
       select(
-        month_col,
+        !!month_col,
         all_of(columns)
       ) %>%
       pivot_longer(
-        -month_col,
+        -!!month_col,
         names_to = "question_column",
         values_drop_na = TRUE
       ) %>%
       mutate(
-        .data$question_column := case_when(
+        question_column = case_when(
           length(unique(.data$question_column)) == 1 ~ value,
           TRUE ~ .data$question_column
         )
       ) %>%
       mutate(
-        .data$question_column := factor(
+        question_column = factor(
           .data$question_column,
           levels = names(responses),
           labels = responses
         )
       ) %>%
       group_by(
-        month_col,
+        !!sym(month_col),
         .data$question_column
       ) %>%
       count() %>%
       na.omit() %>%
       group_by(
-        month_col
+        !!sym(month_col)
       ) %>%
       mutate(
-        .data$base_for_month := sum(.data$n),
-        .data$percentage := .data$n / sum(.data$n) * 100
+        base_for_month = sum(.data$n),
+        percentage = .data$n / sum(.data$n) * 100
       ) %>%
       select(
-        month_col,
+        !!month_col,
         .data$question_column,
         .data$percentage,
         .data$base_for_month
@@ -933,19 +958,21 @@ stacked_vertical <- function(data, columns, responses, colours, legend_title,
           left_join(
             .,
             means,
-            by = "month_col"
+            by = month_col
           )
-        } else mutate(., mean = NA)
+        } else {
+          mutate(., mean = NA)
+        }
       } %>%
       ggplot(
         aes(
-          x = month_col,
+          x = !!sym(month_col),
           y = .data$percentage,
           fill = .data$question_column,
           text = {
             if (!isFALSE(show_mean)) {
               glue(
-                "{date_Ymd_to_bY(month_col)} ",
+                "{date_Ymd_to_bY(.data[[month_col]])} ",
                 "({base_for_month}{ifelse(base_for_month < low_base, '*', '')})\n",
                 "Mean score {mean}\n",
                 "{question_column}\n",
@@ -953,7 +980,7 @@ stacked_vertical <- function(data, columns, responses, colours, legend_title,
               )
             } else {
               glue(
-                "{date_Ymd_to_bY(month_col)} ",
+                "{date_Ymd_to_bY(.data[[month_col]])} ",
                 "({base_for_month}{ifelse(base_for_month < low_base, '*', '')})\n",
                 "{question_column}\n",
                 "{decimal_places(percentage, 0)}%"
@@ -970,20 +997,21 @@ stacked_vertical <- function(data, columns, responses, colours, legend_title,
       ) +
       scale_x_date(
         date_breaks = "1 month",
-        expand = c(0,0),
+        expand = c(0, 0),
         date_labels = "%B '%y"
       ) +
       scale_fill_manual(
         values = setNames(
           colours[1:length(responses)],
-          responses)
+          responses
+        )
       ) +
       theme_classic() +
       theme(
         axis.text.x = element_text(
           angle = 45,
           vjust = 1,
-          hjust=1
+          hjust = 1
         )
       ),
     tooltip = "text"
@@ -992,11 +1020,11 @@ stacked_vertical <- function(data, columns, responses, colours, legend_title,
       displayModeBar = FALSE
     ) %>%
     layout(
-      legend = list(orientation = "h", x = 0.5,  y = -0.6, xanchor = "center"),
+      legend = list(orientation = "h", x = 0.5, y = -0.6, xanchor = "center"),
       annotations = list(
-        x = 0.5, y = -0.5, xanchor = 'center',
+        x = 0.5, y = -0.5, xanchor = "center",
         text = glue("* indicates low base size (< {low_base})"),
-        showarrow = F, xref = 'paper', yref = 'paper',
+        showarrow = F, xref = "paper", yref = "paper",
         font = list(size = 12)
       )
     )
@@ -1019,33 +1047,36 @@ stacked_vertical <- function(data, columns, responses, colours, legend_title,
 #' @return Highcharts object
 #' @export
 #'
-#' @examples \dontrun{}
+#' @examples \dontrun{
+#'
+#' }
 stacked_horizontal <- function(data, question_column, responses, colours, legend_names,
                                low_base = 100, month_col, last_valid_month_range_selection) {
-
   validate(need(nrow(data) > 0, "No data for current filter selection!"))
 
   question <- data %>%
     select(
-      month_col,
+      !!month_col,
       !!question_column
     ) %>%
     na.omit() %>%
     filter(
-      !!question_column != ""
+      !!sym(question_column) != ""
     )
 
   question <- question %>%
     group_by(
-      month_col
+      !!sym(month_col)
     )
 
-  chart <- question %>% select(month_col) %>% unique()
+  chart <- question %>%
+    select(month_col) %>%
+    unique()
 
   for (name in names(responses)) {
     summ <- question %>%
       summarise(
-        !!name := sum(.data[[question_column]] == responses[name])
+        !!sym(name) := sum(.data[[question_column]] == responses[name])
       )
 
     chart <- chart %>%
@@ -1058,7 +1089,7 @@ stacked_horizontal <- function(data, question_column, responses, colours, legend
   all_months <- chart %>%
     filter(
       between(
-        month_col,
+        !!sym(month_col),
         last_valid_month_range_selection[1],
         last_valid_month_range_selection[2]
       )
@@ -1066,10 +1097,10 @@ stacked_horizontal <- function(data, question_column, responses, colours, legend
     as.data.frame() %>%
     summarise(across(-month_col, sum)) %>%
     mutate(
-      .data$base := sum(across(!starts_with("month_col"))),
-      .data$month_col := glue("All in selected time frame<br>(base: ", .data$base, ")"),
+      base = sum(across(!starts_with("month_col"))),
+      !!sym(month_col) := glue("All in selected time frame<br>(base: ", .data$base, ")"),
       across(
-        !starts_with(c("month_col", "base")),
+        !starts_with(c(month_col, "base")),
         ~ 100 * . / .data$base,
         .names = "percent_{.col}"
       )
@@ -1084,9 +1115,9 @@ stacked_horizontal <- function(data, question_column, responses, colours, legend
 
   chart <- chart %>%
     mutate(
-      .data$base := sum(across(!starts_with("month_col"))),
+      base = sum(across(!starts_with("month_col"))),
       across(
-        !starts_with(c("month_col", "base")),
+        !starts_with(c(month_col, "base")),
         ~ 100 * . / .data$base,
         .names = "percent_{.col}"
       )
@@ -1114,15 +1145,18 @@ stacked_horizontal <- function(data, question_column, responses, colours, legend
 
   rolling <- data %>%
     filter(
-      month_col %in% sort(
-        unique(data[month_col]), decreasing = TRUE)[1:3]
+      !!sym(month_col) %in% sort(
+        unique(data[[month_col]]),
+        decreasing = TRUE
+      )[1:3]
     ) %>%
     select(
       month_col,
-      !!question_column) %>%
+      !!question_column
+    ) %>%
     na.omit() %>%
     filter(
-      !!question_column != ""
+      !!sym(question_column) != ""
     ) %>%
     group_by(
       !!sym(question_column)
@@ -1134,7 +1168,7 @@ stacked_horizontal <- function(data, question_column, responses, colours, legend
 
   vals_list <- sapply(
     names(responses),
-    function(x){
+    function(x) {
       sum(
         rolling$n[rolling[[question_column]] == responses[x]]
       ) / rolling_base * 100
@@ -1149,9 +1183,9 @@ stacked_horizontal <- function(data, question_column, responses, colours, legend
   rolling_base <- ifelse(rolling_base < low_base, glue("{rolling_base}*"), rolling_base)
 
   rolling_data <- data.frame(
-    "first_of_month" = paste0(
+    !!sym(month_col) := paste0(
       "3 Month Rolling to ",
-      date_Ymd_to_bY(last_valid_month_range_selection()[2]),
+      date_Ymd_to_bY(last_valid_month_range_selection[2]),
       " <br>(base: ",
       rolling_base, ")"
     )
@@ -1159,7 +1193,7 @@ stacked_horizontal <- function(data, question_column, responses, colours, legend
 
   rolling_data <- rolling_data %>%
     mutate(
-      .data$base := .data$rolling_base
+      base = rolling_base
     )
 
   for (name in names(responses)) {
@@ -1183,7 +1217,7 @@ stacked_horizontal <- function(data, question_column, responses, colours, legend
         data = chart,
         type = "bar",
         hcaes(
-          x = month_col,
+          x = !!sym(month_col),
           y = round(!!sym(glue("percent_{response}")))
         )
       )
@@ -1259,10 +1293,11 @@ stacked_horizontal <- function(data, question_column, responses, colours, legend
 #' @return Highcharts object
 #' @export
 #'
-#' @examples \dontrun{}
+#' @examples \dontrun{
+#'
+#' }
 pie <- function(data, question_column, responses, colours, chart_title = NULL,
                 low_base = 100) {
-
   validate(need(nrow(data) > 0, "No data for current filter selection!"))
 
   chart <- data %>%
@@ -1274,7 +1309,7 @@ pie <- function(data, question_column, responses, colours, chart_title = NULL,
       !!sym(question_column) != ""
     ) %>%
     mutate(
-      !!question_column := factor(
+      !!sym(question_column) := factor(
         !!sym(question_column),
         levels = names(responses),
         labels = responses
@@ -1307,12 +1342,14 @@ pie <- function(data, question_column, responses, colours, chart_title = NULL,
       )
     ) %>%
     {
-      if(!is.null(chart_title)) {
+      if (!is.null(chart_title)) {
         hc_title(
           .,
           text = chart_title
         )
-      } else .
+      } else {
+        .
+      }
     } %>%
     hc_subtitle(
       text = paste0("Base: ", base)
@@ -1368,10 +1405,11 @@ pie <- function(data, question_column, responses, colours, chart_title = NULL,
 #' @return Highcharts object
 #' @export
 #'
-#' @examples \dontrun{}
+#' @examples \dontrun{
+#'
+#' }
 horizontal_bar <- function(data, columns, responses, colour, chart_title = NULL,
                            arrange_desc = TRUE, low_base = 100, month_col) {
-
   validate(need(nrow(data) > 0, "No data for current filter selection!"))
 
   chart <- data %>%
@@ -1385,13 +1423,13 @@ horizontal_bar <- function(data, columns, responses, colour, chart_title = NULL,
       values_drop_na = TRUE
     ) %>%
     mutate(
-      .data$question_column := case_when(
+      question_column = case_when(
         length(unique(.data$question_column)) == 1 ~ value,
         TRUE ~ .data$question_column
       )
     ) %>%
     mutate(
-      .data$question_column := factor(
+      question_column = factor(
         .data$question_column,
         levels = names(responses) %||% responses,
         labels = responses
@@ -1406,7 +1444,7 @@ horizontal_bar <- function(data, columns, responses, colour, chart_title = NULL,
     count() %>%
     ungroup() %>%
     mutate(
-      .data$percentage := n / sum(n) * 100
+      percentage = n / sum(n) * 100
     ) %>%
     select(
       .data$question_column,
@@ -1463,7 +1501,9 @@ horizontal_bar <- function(data, columns, responses, colour, chart_title = NULL,
           .,
           text = chart_title
         )
-      } else .
+      } else {
+        .
+      }
     } %>%
     hc_subtitle(
       text = paste0("Base: ", base)
@@ -1495,7 +1535,9 @@ horizontal_bar <- function(data, columns, responses, colour, chart_title = NULL,
 #' @return Highcharts object
 #' @export
 #'
-#' @examples \dontrun{}
+#' @examples \dontrun{
+#'
+#' }
 coding_horizontal_bar <- function(data, coded_column, total_column,
                                   colour = "#005EB8",
                                   chart_title = NULL, arrange_desc = TRUE,
@@ -1510,12 +1552,12 @@ coding_horizontal_bar <- function(data, coded_column, total_column,
       !!sym(coded_column)
     ) %>%
     mutate(
-      !!total_column := sum(!!sym(total_column))
+      !!sym(total_column) := sum(!!sym(total_column))
     ) %>%
     unique() %>%
     ungroup() %>%
     mutate(
-      .data$percentage := !!sym(total_column) / sum(!!sym(total_column)) * 100
+      percentage = !!sym(total_column) / sum(!!sym(total_column)) * 100
     ) %>%
     select(
       !!coded_column,
@@ -1528,7 +1570,9 @@ coding_horizontal_bar <- function(data, coded_column, total_column,
           .,
           desc(.data$percentage)
         )
-      } else .
+      } else {
+        .
+      }
     } %>%
     filter(
       .data$percentage > 1
@@ -1575,7 +1619,9 @@ coding_horizontal_bar <- function(data, coded_column, total_column,
           .,
           text = chart_title
         )
-      } else .
+      } else {
+        .
+      }
     } %>%
     hc_subtitle(
       text = paste0("Base: ", base)

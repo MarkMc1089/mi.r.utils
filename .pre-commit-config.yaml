@@ -14,16 +14,33 @@ repos:
     # codemeta must be above use-tidy-description when both are used
     # -   id: codemeta-description-updated
         additional_dependencies:
-        -    desc
-        -    gert
-        -    gh
-        -    git2r
+        -    dplyr
+        -    DT
+        -    fs
+        -    ggplot2
         -    glue
-        -    golem
-        -    precommit
+        -    grDevices
+        -    highcharter
+        -    htmltools
+        -    htmlwidgets
+        -    lubridate
+        -    magrittr
+        -    plotly
+        -    purrr
         -    rlang
-        -    rprojroot
-        -    usethis
+        -    rstudioapi
+        -    shiny
+        -    shinyBS
+        -    shinyWidgets
+        -    sigtest
+        -    skimr
+        -    snakecase
+        -    stats
+        -    stringr
+        -    tidyr
+        -    utils
+        -    withr
+        -    zoo
     -   id: use-tidy-description
     -   id: spell-check
         exclude: >
@@ -47,9 +64,9 @@ repos:
           .*\.sh|
           .*\.RData
           )$
-    -   id: lintr
-        args: [--warn_only]
-        verbose: true
+    # -   id: lintr
+    #     args: [--warn_only]
+    #     verbose: true
     -   id: readme-rmd-rendered
     -   id: parsable-R
     -   id: no-browser-statement

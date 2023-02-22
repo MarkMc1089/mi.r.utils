@@ -33,10 +33,10 @@
 #' @importFrom zoo as.yearmon
 #' @importFrom grDevices colorRampPalette
 #' @importFrom shinyBS bsCollapse
-#' @importFrom dplyr mutate filter left_join case_when group_by count ungroup full_join arrange summarise all_of bind_rows n between desc select across if_else starts_with pull add_count
+#' @importFrom dplyr mutate filter left_join case_when group_by count ungroup full_join arrange summarise all_of bind_rows n between desc select across if_else starts_with pull add_count lag
 #' @importFrom highcharter highchart hc_add_series hc_xAxis hc_tooltip hc_plotOptions hc_yAxis hc_title hc_subtitle hc_legend hc_colors hcaes
 #' @importFrom lubridate %m+% %m-% now years
-#' @importFrom stats na.omit lag setNames
+#' @importFrom stats na.omit setNames
 #' @importFrom rlang := sym as_name is_null .data as_function squash
 #' @importFrom tidyr replace_na complete nesting spread pivot_longer
 #' @importFrom sigtest nps_moe_test
