@@ -6,7 +6,8 @@
 \usage{
 info_tooltip(
   content,
-  style = "display: inline; padding-left: 1px; font-size: 1 rem; font-weight: 400"
+  style =
+    glue("display: inline; padding-left: 1px; font-size: \\\\\\n                                      1 rem; font-weight: 400")
 )
 }
 \arguments{
@@ -21,5 +22,7 @@ HTML
 Create info tooltip to be used with tippy.js
 }
 \examples{
-\dontrun{}
+\dontrun{
+
+}
 }

@@ -2,8 +2,9 @@
 % Please edit documentation in R/functions.R
 \name{per_s_error_vect}
 \alias{per_s_error_vect}
-\title{https://www.dummies.com/education/math/statistics/how-to-compare-two-population-proportions/
-Why use 1.93? It seems this corresponds to a confidence interval of ~94.64\% Should it not be 1.96?}
+\title{https://www.dummies.com/education/math/statistics/how-to-compare-two-population-proportions/  # Exclude Linting
+Why use 1.93? It seems this corresponds to a confidence interval of ~94.64\%.
+Should it not be 1.96?}
 \usage{
 per_s_error_vect(base1, per1, base2, per2)
 }
@@ -20,9 +21,12 @@ per_s_error_vect(base1, per1, base2, per2)
 Character
 }
 \description{
-https://www.dummies.com/education/math/statistics/how-to-compare-two-population-proportions/
-Why use 1.93? It seems this corresponds to a confidence interval of ~94.64\% Should it not be 1.96?
+https://www.dummies.com/education/math/statistics/how-to-compare-two-population-proportions/  # Exclude Linting
+Why use 1.93? It seems this corresponds to a confidence interval of ~94.64\%.
+Should it not be 1.96?
 }
 \examples{
-\dontrun{}
+\dontrun{
+
+}
 }

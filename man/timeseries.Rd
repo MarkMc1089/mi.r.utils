@@ -6,7 +6,7 @@
 \usage{
 timeseries(
   data,
-  is.percentage = FALSE,
+  is_percentage = FALSE,
   units = "",
   show_prev_fy = TRUE,
   prev_fy_start,
@@ -18,7 +18,7 @@ timeseries(
 \arguments{
 \item{data}{Data}
 
-\item{is.percentage}{Boolean}
+\item{is_percentage}{Boolean}
 
 \item{units}{Character}
 
@@ -39,5 +39,7 @@ Highcharts object
 Time series chart
 }
 \examples{
-\dontrun{}
+\dontrun{
+
+}
 }

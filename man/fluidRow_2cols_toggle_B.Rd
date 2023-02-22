@@ -18,5 +18,7 @@ HTML
 Create Shiny output widgets in 2 columns, with 2nd column initially hidden.
 }
 \examples{
-\dontrun{}
+\dontrun{
+
+}
 }

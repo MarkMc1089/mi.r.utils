@@ -8,21 +8,23 @@
 #' @return HTML
 #' @export
 #'
-#' @examples \dontrun{}
-dateRangeMonthsInput <- function(
-  inputId, label = NULL, start = NULL, end = NULL, min = NULL, max = NULL,
-  format = "yyyy-mm-dd", startview = "month", minviewmode = "months",
-  weekstart = 0, language = "en", separator = " to ", width = NULL,
-  init_hide = FALSE, autoclose = TRUE) {
-
+#' @examples \dontrun{
+#'
+#' }
+# Begin Exclude Linting
+dateRangeMonthsInput <- function(inputId, label = NULL, start = NULL, end = NULL, min = NULL, max = NULL,
+                                 format = "yyyy-mm-dd", startview = "month", minviewmode = "months",
+                                 weekstart = 0, language = "en", separator = " to ", width = NULL,
+                                 init_hide = FALSE, autoclose = TRUE) {
+  # End Exclude Linting
   # If start and end are date objects, convert to a string with yyyy-mm-dd format
   # Same for min and max
-  if (inherits(start, "Date"))  start <- format(start, "%Y-%m-%d")
-  if (inherits(end,   "Date"))  end   <- format(end,   "%Y-%m-%d")
-  if (inherits(min,   "Date"))  min   <- format(min,   "%Y-%m-%d")
-  if (inherits(max,   "Date"))  max   <- format(max,   "%Y-%m-%d")
+  if (inherits(start, "Date")) start <- format(start, "%Y-%m-%d")
+  if (inherits(end, "Date")) end <- format(end, "%Y-%m-%d")
+  if (inherits(min, "Date")) min <- format(min, "%Y-%m-%d")
+  if (inherits(max, "Date")) max <- format(max, "%Y-%m-%d")
 
-  maybe_hide = if (init_hide) {"display: none; "} else {""}
+  maybe_hide <- if (init_hide) "display: none; " else ""
 
   attachDependencies(
     div(
@@ -72,20 +74,25 @@ dateRangeMonthsInput <- function(
   )
 }
 
-`%AND%` <- function(x, y) {
-  if (!is.null(x) && !is.na(x))
-    if (!is.null(y) && !is.na(y))
+`%AND%` <- function(x, y) { # Exclude Linting
+  if (!is.null(x) && !is.na(x)) {
+    if (!is.null(y) && !is.na(y)) {
       return(y)
+    }
+  }
   return(NULL)
 }
 
-controlLabel <- function(controlName, label) {
-  if (!is.null(label)) label %AND%
-    label(class = "control-label", `for` = controlName, label)
+controlLabel <- function(controlName, label) { # Exclude Linting
+  if (!is.null(label)) {
+    label %AND%
+      label(class = "control-label", `for` = controlName, label)
+  }
 }
 
-# the datePickerDependency is taken from https://github.com/rstudio/shiny/blob/master/R/input-date.R
-datePickerDependency <- htmlDependency(
+# the datePickerDependency is taken from
+# https://github.com/rstudio/shiny/blob/master/R/input-date.R
+datePickerDependency <- htmlDependency( # Exclude Linting
   "bootstrap-datepicker", "1.6.4", c(href = "shared/datepicker"),
   script = "js/bootstrap-datepicker.min.js",
   stylesheet = "css/bootstrap-datepicker3.min.css",
@@ -96,7 +103,8 @@ datePickerDependency <- htmlDependency(
            $.fn.bsDatepicker = datepicker;
            $.fn.bsDatepicker.defaults.autoclose = true;
            })();
-         </script>")
+         </script>"
+)
 
 
 #' Create select input with choices corresponding to months in data.
@@ -108,28 +116,33 @@ datePickerDependency <- htmlDependency(
 #' @return HTML
 #' @export
 #'
-#' @examples \dontrun{}
-selectInputFromMonths <- function(id, month_data, init_hide = FALSE) {
-  maybe_hide = if (init_hide) {"display: none; "} else {""}
+#' @examples \dontrun{
+#'
+#' }
+select_input_from_months <- function(id, month_data, init_hide = FALSE) {
+  maybe_hide <- if (init_hide) {
+    "display: none; "
+  } else {
+    ""
+  }
 
   s <- selectInput(
     id,
     "",
     c(setNames(
-        as.character(
-          sort(
-            unique(month_data),
-            decreasing = TRUE
-          )
-        ),
-        date_Ymd_to_bY(
-          sort(
-            unique(month_data),
-            decreasing = TRUE
-          )
+      as.character(
+        sort(
+          unique(month_data),
+          decreasing = TRUE
+        )
+      ),
+      date_Ymd_to_bY(
+        sort(
+          unique(month_data),
+          decreasing = TRUE
         )
       )
-    ),
+    )),
   )
 
   s$attribs[["style"]] <- maybe_hide
@@ -146,25 +159,23 @@ selectInputFromMonths <- function(id, month_data, init_hide = FALSE) {
 #' @return Character
 #' @export
 #'
-#' @examples \dontrun{}
-with_plus <- function(x, ...)
-{
-  if (x > 0)
-  {
+#' @examples \dontrun{
+#'
+#' }
+with_plus <- function(x, ...) {
+  if (x > 0) {
     sprintf(
       fmt = "+%s",
       format(x, ...)
     )
-  }
-  else
-  {
+  } else {
     x
   }
 }
 
 
 # Use like x %||% y. If x is null, return y. If x is not null, return x.
-`%||%` <- function(x,y) if (is_null(x)) y else x
+`%||%` <- function(x, y) if (is_null(x)) y else x
 
 
 #' Set number of decimal places of number and return as char.
@@ -175,7 +186,9 @@ with_plus <- function(x, ...)
 #' @return Character
 #' @export
 #'
-#' @examples \dontrun{}
+#' @examples \dontrun{
+#'
+#' }
 decimal_places <- function(x, k) {
   trimws(format(round(x, k), nsmall = k))
 }
@@ -188,8 +201,10 @@ decimal_places <- function(x, k) {
 #' @return Character
 #' @export
 #'
-#' @examples \dontrun{}
-date_Ymd_to_bY <- function(date_to_format) {
+#' @examples \dontrun{
+#'
+#' }
+date_Ymd_to_bY <- function(date_to_format) { # Exclude Linting
   format(date_to_format, format = "%b %Y")
 }
 
@@ -202,7 +217,9 @@ date_Ymd_to_bY <- function(date_to_format) {
 #' @return Int
 #' @export
 #'
-#' @examples \dontrun{}
+#' @examples \dontrun{
+#'
+#' }
 month_diff <- function(d1, d2 = NULL) {
   if (is.null(d2)) {
     d2 <- d1[2]
@@ -224,7 +241,9 @@ month_diff <- function(d1, d2 = NULL) {
 #' @return colorRampPalette
 #' @export
 #'
-#' @examples \dontrun{}
+#' @examples \dontrun{
+#'
+#' }
 colour_ramp <- function(n_colours, first = "#003087", last = "#FFFFFF",
                         include_white = FALSE) {
   palette <- colorRampPalette(c(first, last))
@@ -243,10 +262,14 @@ colour_ramp <- function(n_colours, first = "#003087", last = "#FFFFFF",
 #' @return Character
 #' @export
 #'
-#' @examples \dontrun{}
+#' @examples \dontrun{
+#'
+#' }
 per_s_error <- function(base1, per1, base2, per2) {
   # Return immediately if any arg is NA
-  if (any(is.na(c(base1, per1, base2, per2)))) return ("")
+  if (any(is.na(c(base1, per1, base2, per2)))) {
+    return("")
+  }
 
   base1 <- base1
   per1 <- per1
@@ -258,18 +281,19 @@ per_s_error <- function(base1, per1, base2, per2) {
     sqrt((pooled_per * (1 - pooled_per)) * ((1 / base1) + (1 / base2)))
   sig_value <- abs((per1 / 100 - per2 / 100) / s_error)
   arrow <- ""
-  if (sig_value > 1.93 & per2 < per1) {
+  if (sig_value > 1.93 && per2 < per1) {
     arrow <- "<font color = '#DA291C', size = '5'>&dArr;</font>"
   }
-  if (sig_value > 1.93 & per2 > per1) {
+  if (sig_value > 1.93 && per2 > per1) {
     arrow <- "<font color = '#009639', size = '5'>&uArr;</font>"
   }
   arrow
 }
 
 
-#' https://www.dummies.com/education/math/statistics/how-to-compare-two-population-proportions/
-#' Why use 1.93? It seems this corresponds to a confidence interval of ~94.64% Should it not be 1.96?
+#' https://www.dummies.com/education/math/statistics/how-to-compare-two-population-proportions/  # Exclude Linting
+#' Why use 1.93? It seems this corresponds to a confidence interval of ~94.64%.
+#' Should it not be 1.96?
 #'
 #' @param base1 Int
 #' @param per1 Numeric
@@ -279,13 +303,17 @@ per_s_error <- function(base1, per1, base2, per2) {
 #' @return Character
 #' @export
 #'
-#' @examples \dontrun{}
+#' @examples \dontrun{
+#'
+#' }
 per_s_error_vect <- function(base1, per1, base2, per2) {
-  if (anyNA(c(base1, per1, base2, per2))) return ("")
+  if (anyNA(c(base1, per1, base2, per2))) {
+    return("")
+  }
 
   pooled_per <- (base1 * per1 + base2 * per2) / (100 * (base1 + base2))
-  s_error    <- sqrt((pooled_per * (1 - pooled_per)) * ((1 / base1) + (1 / base2)))
-  sig_value  <- abs((per1 - per2) / (100 * s_error))
+  s_error <- sqrt((pooled_per * (1 - pooled_per)) * ((1 / base1) + (1 / base2)))
+  sig_value <- abs((per1 - per2) / (100 * s_error))
 
   if_else(
     sig_value > 1.93,
@@ -309,10 +337,14 @@ per_s_error_vect <- function(base1, per1, base2, per2) {
 #' @return Character
 #' @export
 #'
-#' @examples \dontrun{}
+#' @examples \dontrun{
+#'
+#' }
 per_s_error_small <- function(base1, per1, base2, per2) {
   # Return immediately if any arg is NA
-  if (any(is.na(c(base1, per1, base2, per2)))) return ("")
+  if (any(is.na(c(base1, per1, base2, per2)))) {
+    return("")
+  }
 
   base1 <- base1
   per1 <- per1
@@ -325,10 +357,10 @@ per_s_error_small <- function(base1, per1, base2, per2) {
   sig_value <- abs((per1 / 100 - per2 / 100) / s_error)
 
   arrow <- ""
-  if (sig_value > 1.93 & per2 < per1) {
+  if (sig_value > 1.93 && per2 < per1) {
     arrow <- "<font color = '#DA291C', size = '3'>&dArr;</font>"
   }
-  if (sig_value > 1.93 & per2 > per1) {
+  if (sig_value > 1.93 && per2 > per1) {
     arrow <- "<font color = '#009639', size = '3'>&uArr;</font>"
   }
   arrow
@@ -343,13 +375,15 @@ per_s_error_small <- function(base1, per1, base2, per2) {
 #' @return HTML
 #' @export
 #'
-#' @examples \dontrun{}
+#' @examples \dontrun{
+#'
+#' }
 content_box <- function(title, ...) {
   div(
-    class = 'sixteen wide column',
+    class = "sixteen wide column",
     style = "overflow: visible!important;",
     div(
-      class = 'sixteen wide column',
+      class = "sixteen wide column",
       div(
         class = "column",
         div(
@@ -373,10 +407,14 @@ content_box <- function(title, ...) {
 #' @return HTML
 #' @export
 #'
-#' @examples \dontrun{}
+#' @examples \dontrun{
+#'
+#' }
 label <- function(label_text, ...) {
   div(
-    style = "text-align:center;color:#333333;font-size:18px;font-weight:700;fill:#333333;",
+    style = glue(
+      "text-align:center;color:#333333;font-size:18px;font-weight:700;fill:#333333;"
+    ),
     label_text,
     ...
   )
@@ -391,12 +429,14 @@ label <- function(label_text, ...) {
 #' @return HTML
 #' @export
 #'
-#' @examples \dontrun{}
-fluidRow_2cols_toggle_B <- function(output_fun, output_name) {
+#' @examples \dontrun{
+#'
+#' }
+fluidRow_2cols_toggle_B <- function(output_fun, output_name) { # Exclude Linting
   fluidRow(
     id = output_name,
     div(class = "groupA col-sm-12", output_fun(glue("{output_name}_A"))),
-    div(class = "groupB hidden",    output_fun(glue("{output_name}_B")))
+    div(class = "groupB hidden", output_fun(glue("{output_name}_B")))
   )
 }
 
@@ -408,7 +448,9 @@ fluidRow_2cols_toggle_B <- function(output_fun, output_name) {
 #' @return HTML
 #' @export
 #'
-#' @examples \dontrun{}
+#' @examples \dontrun{
+#'
+#' }
 user_group_select <- function(id) {
   fluidRow(
     column(9),
@@ -433,11 +475,12 @@ user_group_select <- function(id) {
 #' @return HTML
 #' @export
 #'
-#' @examples \dontrun{}
-info_tooltip <- function(
-  content,
-  style = "display: inline; padding-left: 1px; font-size: 1 rem; font-weight: 400"
-) {
+#' @examples \dontrun{
+#'
+#' }
+info_tooltip <- function(content,
+                         style = glue("display: inline; padding-left: 1px; font-size: \\
+                                      1 rem; font-weight: 400")) {
   span(
     class = "info-tippy",
     style = style,
@@ -454,10 +497,14 @@ info_tooltip <- function(
 #' @return HTML
 #' @export
 #'
-#' @examples \dontrun{}
+#' @examples \dontrun{
+#'
+#' }
+# Begin Exclude Linting
 a11yRadioButtons <- function(inputId, label, choices = NULL, selected = NULL,
-                         inline = FALSE, width = NULL, choiceNames = NULL,
-                         choiceValues = NULL) {
+                             inline = FALSE, width = NULL, choiceNames = NULL,
+                             choiceValues = NULL) {
+  # End Exclude Linting
   args <- shiny:::normalizeChoicesArgs(choices, choiceNames, choiceValues)
   selected <- restoreInput(id = inputId, default = selected)
   selected <- if (is.null(selected)) args$choiceValues[[1]] else as.character(selected)
@@ -465,8 +512,8 @@ a11yRadioButtons <- function(inputId, label, choices = NULL, selected = NULL,
   options <- shiny:::generateOptions(
     inputId, selected, inline, "radio", args$choiceNames, args$choiceValues
   )
-  divClass <- "form-group shiny-input-radiogroup shiny-input-container"
-  if (inline) divClass <- paste(divClass, "shiny-input-container-inline")
+  divClass <- "form-group shiny-input-radiogroup shiny-input-container" # Exclude Linting
+  if (inline) divClass <- paste(divClass, "shiny-input-container-inline") # Exclude Linting
   tags$fieldset(
     tags$legend(label),
     div(
@@ -488,12 +535,16 @@ a11yRadioButtons <- function(inputId, label, choices = NULL, selected = NULL,
 #' @return HTML
 #' @export
 #'
-#' @examples \dontrun{}
-a11yGeneratePretty <- function (inputId, selected, inline, type = "checkbox",
-                                choiceNames, choiceValues, status = "primary",
-                                shape = "square", outline = FALSE, fill = FALSE,
-                                thick = FALSE, animation = NULL, icon = NULL,
-                                plain = FALSE, bigger = FALSE) {
+#' @examples \dontrun{
+#'
+#' }
+# Begin Exclude Linting
+a11yGeneratePretty <- function(inputId, selected, inline, type = "checkbox",
+                               choiceNames, choiceValues, status = "primary",
+                               shape = "square", outline = FALSE, fill = FALSE,
+                               thick = FALSE, animation = NULL, icon = NULL,
+                               plain = FALSE, bigger = FALSE) {
+  # End Exclude Linting
   if (!is.null(icon)) {
     icon <- shinyWidgets:::validateIcon(icon)
     icon$attribs$class <- paste("icon", icon$attribs$class)
@@ -502,15 +553,15 @@ a11yGeneratePretty <- function (inputId, selected, inline, type = "checkbox",
     choiceValues,
     choiceNames,
     FUN = function(value, name) {
-      inputTag <- tags$input(
+      inputTag <- tags$input( # Exclude Linting
         type = type,
         name = inputId,
         value = value,
         `aria-labelledby` = paste0(to_snake_case(value), "_label")
       )
-      if (name == "") name = "empty"
+      if (name == "") name <- "empty"
       label_style <- if (name == "empty") "display: none;" else ""
-      if (value %in% selected) inputTag$attribs$checked <- "checked"
+      if (value %in% selected) inputTag$attribs$checked <- "checked" # Exclude Linting
       if (inline) {
         div(
           class = "pretty",
@@ -533,8 +584,7 @@ a11yGeneratePretty <- function (inputId, selected, inline, type = "checkbox",
             )
           )
         )
-      }
-      else {
+      } else {
         tagList(
           div(
             class = "pretty",
@@ -579,14 +629,18 @@ a11yGeneratePretty <- function (inputId, selected, inline, type = "checkbox",
 #' @return HTML
 #' @export
 #'
-#' @examples \dontrun{}
-a11yPrettyCheckboxGroup <- function (inputId, label, choices = NULL,
-                                     selected = NULL, status = "default",
-                                     shape = c("square", "curve", "round"),
-                                     outline = FALSE, fill = FALSE, thick = FALSE,
-                                     animation = NULL, icon = NULL, plain = FALSE,
-                                     bigger = FALSE, inline = FALSE, width = NULL,
-                                     choiceNames = NULL, choiceValues = NULL) {
+#' @examples \dontrun{
+#'
+#' }
+# Begin Exclude Linting
+a11yPrettyCheckboxGroup <- function(inputId, label, choices = NULL,
+                                    selected = NULL, status = "default",
+                                    shape = c("square", "curve", "round"),
+                                    outline = FALSE, fill = FALSE, thick = FALSE,
+                                    animation = NULL, icon = NULL, plain = FALSE,
+                                    bigger = FALSE, inline = FALSE, width = NULL,
+                                    choiceNames = NULL, choiceValues = NULL) {
+  # End Exclude Linting
   status <- match.arg(
     status,
     c("default", "primary", "success", "info", "danger", "warning")
@@ -604,9 +658,9 @@ a11yPrettyCheckboxGroup <- function (inputId, label, choices = NULL,
     status = status, shape = shape, outline = outline, fill = fill, thick = thick,
     animation = animation, icon = icon, plain = plain, bigger = bigger
   )
-  divClass <- "form-group shiny-input-checkboxgroup shiny-input-container"
-  if (inline) divClass <- paste(divClass, "shiny-input-container-inline")
-  checkgroupTag <- div(
+  divClass <- "form-group shiny-input-checkboxgroup shiny-input-container" # Exclude Linting
+  if (inline) divClass <- paste(divClass, "shiny-input-container-inline") # Exclude Linting
+  checkgroupTag <- div( # Exclude Linting
     id = inputId,
     style = if (!is.null(width)) paste0("width: ", validateCssUnit(width), ";"),
     class = divClass,
@@ -623,8 +677,10 @@ a11yPrettyCheckboxGroup <- function (inputId, label, choices = NULL,
 #' @return HTML
 #' @export
 #'
-#' @examples \dontrun{}
-a11yBsCollapse <- function(id, open, ...) {
+#' @examples \dontrun{
+#'
+#' }
+a11yBsCollapse <- function(id, open, ...) { # Exclude Linting
   tagQuery(
     bsCollapse(
       id = id,
@@ -634,8 +690,8 @@ a11yBsCollapse <- function(id, open, ...) {
   )$
     find(".panel-heading")$
     each(function(x, i) {
-      x$children[[1]] <- h3(class="panel-title", x$children[[1]]$children)
-    })$
+    x$children[[1]] <- h3(class = "panel-title", x$children[[1]]$children)
+  })$
     allTags()
 }
 
@@ -650,7 +706,9 @@ a11yBsCollapse <- function(id, open, ...) {
 #' @return Used for side effects
 #' @export
 #'
-#' @examples \dontrun{}
+#' @examples \dontrun{
+#'
+#' }
 suppress_warnings <- function(.expr, .f, ...) {
   eval.parent(substitute(
     withCallingHandlers(.expr, warning = function(w) {

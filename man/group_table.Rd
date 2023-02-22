@@ -32,5 +32,7 @@ Use for free text tables such as comments and reasons; give the column of
 interest and the associated selectInput id to use for NPS grouping as strings.
 }
 \examples{
-\dontrun{}
+\dontrun{
+
+}
 }

@@ -43,5 +43,7 @@ feature. These show a full range bar and a 3 month rolling bar for the last
 month in the selected range.
 }
 \examples{
-\dontrun{}
+\dontrun{
+
+}
 }

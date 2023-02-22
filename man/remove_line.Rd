@@ -18,5 +18,7 @@ Vector of characters or NULL
 Title
 }
 \examples{
-\dontrun{}
+\dontrun{
+
+}
 }

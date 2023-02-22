@@ -35,5 +35,7 @@ Pie chart showing percentage of unique responses. Use for non-rating style
 questions with 3 or less possible responses only.
 }
 \examples{
-\dontrun{}
+\dontrun{
+
+}
 }

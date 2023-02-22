@@ -21,7 +21,7 @@ month_range_indicator <- function(month_range) {
 #' Time series chart
 #'
 #' @param data Data
-#' @param is.percentage Boolean
+#' @param is_percentage Boolean
 #' @param units Character
 #' @param show_prev_fy Boolean
 #' @param prev_fy_start Date
@@ -35,7 +35,7 @@ month_range_indicator <- function(month_range) {
 #' @examples \dontrun{
 #'
 #' }
-timeseries <- function(data, is.percentage = FALSE, units = "",
+timeseries <- function(data, is_percentage = FALSE, units = "",
                        show_prev_fy = TRUE, prev_fy_start, prev_fy_end,
                        this_fy_start, this_fy_end) {
   data <- data %>%
@@ -45,7 +45,7 @@ timeseries <- function(data, is.percentage = FALSE, units = "",
     ) %>%
     suppressWarnings()
 
-  if (is.percentage) data <- data %>% mutate(Value = .data$Value * 100)
+  if (is_percentage) data <- data %>% mutate(Value = .data$Value * 100)
 
   hc <- highchart()
 
@@ -179,7 +179,7 @@ timeseries <- function(data, is.percentage = FALSE, units = "",
 line_chart <- function(data, measure, measure_aux = NULL, targets = NULL,
                        three_month_rolling = FALSE, low_base = 100,
                        title = NULL, subtitle = NULL, month_col,
-                       last_valid_month_range_selection) {
+                       last_valid_month_range_selection) { # Exclude Linting
   validate(need(nrow(data) > 0, "No data for current filter selection!"))
 
   if (!is.null(measure_aux)) {
@@ -350,7 +350,7 @@ line_chart <- function(data, measure, measure_aux = NULL, targets = NULL,
   chart$score_sig <- ""
 
   if (three_month_rolling) {
-    for (i in 1:nrow(chart)) {
+    for (i in seq_len(nrow(chart))) {
       chart$score_sig[i] <- nps_moe_test(
         chart$pro3MR[i],
         chart$pas3MR[i],
@@ -366,7 +366,7 @@ line_chart <- function(data, measure, measure_aux = NULL, targets = NULL,
     base <- sym("base3MR")
     name <- glue("{measure} (3MR)")
   } else {
-    for (i in 1:nrow(chart)) {
+    for (i in seq_len(nrow(chart))) {
       chart$score_sig[i] <- nps_moe_test(
         chart$Promoter[i],
         chart$Passive[i],
@@ -415,7 +415,9 @@ line_chart <- function(data, measure, measure_aux = NULL, targets = NULL,
       ),
       dataLabels = list(
         enabled = TRUE,
-        formatter = JS("function () { return this.point.y + this.point.lb + this.point.sig; }"),
+        formatter = JS(
+          "function () { return this.point.y + this.point.lb + this.point.sig; }"
+        ),
         useHTML = TRUE
       )
     ) %>%
@@ -434,10 +436,10 @@ line_chart <- function(data, measure, measure_aux = NULL, targets = NULL,
             lb = .data$maybe_lb,
           ),
           dataLabels = list(
-            enabled = F
+            enabled = FALSE
           ),
           marker = list(
-            enabled = F
+            enabled = FALSE
           ),
           dashStyle = "dash"
         )
@@ -468,7 +470,9 @@ line_chart <- function(data, measure, measure_aux = NULL, targets = NULL,
       ),
       xDateFormat = "%b '%y",
       valueDecimals = 0,
-      pointFormat = "<b>{series.name}:</b> {point.y}<br><b>Base: </b>{point.base}{point.lb}<br>",
+      pointFormat = glue(
+        "<b>{series.name}:</b> {point.y}<br><b>Base: </b>{point.base}{point.lb}<br>"
+      ),
       backgroundColor = "#E8EDEE",
       useHTML = TRUE
     ) %>%
@@ -606,8 +610,8 @@ nps_group_chart <- function(data, three_month_rolling = FALSE, low_base = 100,
           prevpas3MR = lag(.data$pas3MR, 1),
           prevpro3MR = lag(.data$pro3MR, 1),
           base3MR = .data$Detractor + .data$Passive + .data$Promoter +
-            prevDetrator + .data$prevPassive + .data$prevPromoter +
-            prevDetrator2 + .data$prevPassive2 + .data$prevPromoter2,
+            .data$prevDetrator + .data$prevPassive + .data$prevPromoter +
+            .data$prevDetrator2 + .data$prevPassive2 + .data$prevPromoter2,
           Score3MR = round(
             ((.data$pro3MR / .data$base3MR) - (.data$det3MR / .data$base3MR)) * 100
           ),
@@ -795,7 +799,7 @@ nps_group_chart <- function(data, three_month_rolling = FALSE, low_base = 100,
 #'
 #' }
 group_table <- function(data, comment_column, group_select = NULL,
-                        comment_name_in_DT = "Reasons", month_col) {
+                        comment_name_in_DT = "Reasons", month_col) { # Exclude Linting
   validate(need(nrow(data) > 0, "No data for current filter selection!"))
 
   table <- data %>%
@@ -1002,7 +1006,7 @@ stacked_vertical <- function(data, columns, responses, colours, legend_title,
       ) +
       scale_fill_manual(
         values = setNames(
-          colours[1:length(responses)],
+          colours[seq_along(length(responses))],
           responses
         )
       ) +
@@ -1024,7 +1028,7 @@ stacked_vertical <- function(data, columns, responses, colours, legend_title,
       annotations = list(
         x = 0.5, y = -0.5, xanchor = "center",
         text = glue("* indicates low base size (< {low_base})"),
-        showarrow = F, xref = "paper", yref = "paper",
+        showarrow = FALSE, xref = "paper", yref = "paper",
         font = list(size = 12)
       )
     )
@@ -1050,8 +1054,9 @@ stacked_vertical <- function(data, columns, responses, colours, legend_title,
 #' @examples \dontrun{
 #'
 #' }
-stacked_horizontal <- function(data, question_column, responses, colours, legend_names,
-                               low_base = 100, month_col, last_valid_month_range_selection) {
+stacked_horizontal <- function(data, question_column, responses, colours,
+                               legend_names, low_base = 100, month_col,
+                               last_valid_month_range_selection) { # Exclude Linting
   validate(need(nrow(data) > 0, "No data for current filter selection!"))
 
   question <- data %>%
@@ -1109,7 +1114,7 @@ stacked_horizontal <- function(data, question_column, responses, colours, legend
   for (name in names(responses)) {
     all_months <- all_months %>%
       mutate(
-        "{name}_significant" := ""
+        "{name}_significant" := "" # Exclude Linting
       )
   }
 
@@ -1127,14 +1132,14 @@ stacked_horizontal <- function(data, question_column, responses, colours, legend
   for (name in names(chart)[-c(0:length(responses) + 1)]) {
     chart <- chart %>%
       mutate(
-        "prev_{name}" := lag(!!sym(name))
+        "prev_{name}" := lag(!!sym(name)) # Exclude Linting
       )
   }
 
   for (name in names(responses)) {
     chart <- chart %>%
       mutate(
-        !!glue("{name}_significant") := per_s_error_vect(
+        !!glue("{name}_significant") := per_s_error_vect( # Exclude Linting
           .data$prev_base,
           !!sym(glue("prev_percent_{name}")),
           .data$base,
@@ -1199,7 +1204,7 @@ stacked_horizontal <- function(data, question_column, responses, colours, legend
   for (name in names(responses)) {
     rolling_data <- rolling_data %>%
       mutate(
-        "percent_{name}" := rolling_percentages[[name]]
+        "percent_{name}" := rolling_percentages[[name]] # Exclude Linting
       )
   }
 
@@ -1513,7 +1518,9 @@ horizontal_bar <- function(data, columns, responses, colour, chart_title = NULL,
       style = list(
         zIndex = 10000
       ),
-      pointFormat = "<b>Percentage of group:</b> {point.y}%<br><b>Count in group: </b>{point.n}<br>",
+      pointFormat = glue(
+        "<b>Percentage of group:</b> {point.y}%<br><b>Count in group: </b>{point.n}<br>"
+      ),
       valueDecimals = 0,
       backgroundColor = "#E8EDEE",
       useHTML = FALSE

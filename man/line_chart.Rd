@@ -47,5 +47,7 @@ Use for NPS and NES line charts over time (monthly and 3 month rolling
 average); measure should be either "NPS" or "NES"
 }
 \examples{
-\dontrun{}
+\dontrun{
+
+}
 }

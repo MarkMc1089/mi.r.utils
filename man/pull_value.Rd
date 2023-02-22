@@ -18,5 +18,7 @@ Vector of type corresponding to the data
 Title
 }
 \examples{
-\dontrun{}
+\dontrun{
+
+}
 }

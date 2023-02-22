@@ -29,5 +29,7 @@ Make colour ramp palette. Default start colour is NHS Dark Blue. To allow for
 avoiding having white as last colour, n_colours + 1 are created.
 }
 \examples{
-\dontrun{}
+\dontrun{
+
+}
 }

@@ -22,5 +22,7 @@ Character
 Create large standard error arrow if sig diff found
 }
 \examples{
-\dontrun{}
+\dontrun{
+
+}
 }

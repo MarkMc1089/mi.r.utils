@@ -22,5 +22,7 @@ Highcharts object
 Use for NPS groups barcharts (monthly and 3 month rolling average)
 }
 \examples{
-\dontrun{}
+\dontrun{
+
+}
 }

@@ -39,5 +39,7 @@ Plotly object
 Use for vertical stacked barcharts showing percentages of some categorical feature.
 }
 \examples{
-\dontrun{}
+\dontrun{
+
+}
 }

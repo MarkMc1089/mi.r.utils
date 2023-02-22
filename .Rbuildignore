@@ -2,3 +2,6 @@
 ^\.Rproj\.user$
 ^LICENSE\.md$
 ^\.lintr$
+^\.pre-commit-config.yaml$
+^\.github$
+^codecov.yml$

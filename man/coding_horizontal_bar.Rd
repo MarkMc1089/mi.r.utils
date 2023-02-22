@@ -39,5 +39,7 @@ Highcharts object
 Use for displaying \% of coded responses.
 }
 \examples{
-\dontrun{}
+\dontrun{
+
+}
 }

@@ -78,5 +78,7 @@ HTML
 Date range picker allowing for a custom minimum view, such as months only
 }
 \examples{
-\dontrun{}
+\dontrun{
+
+}
 }

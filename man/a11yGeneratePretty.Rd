@@ -62,5 +62,7 @@ HTML
 Accessibility compliant version of shinyWidgets:::generatePretty
 }
 \examples{
-\dontrun{}
+\dontrun{
+
+}
 }

@@ -41,5 +41,7 @@ Use for horizontal barcharts showing percentages of some categorical
 feature. Use for non-rating style questions with more than 3 responses only.
 }
 \examples{
-\dontrun{}
+\dontrun{
+
+}
 }

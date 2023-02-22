@@ -18,5 +18,7 @@ Int
 Get number of months between 2 dates. A partial month counts as one month.
 }
 \examples{
-\dontrun{}
+\dontrun{
+
+}
 }

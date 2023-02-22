@@ -16,5 +16,7 @@ Character
 Create string showing month range
 }
 \examples{
-\dontrun{}
+\dontrun{
+
+}
 }

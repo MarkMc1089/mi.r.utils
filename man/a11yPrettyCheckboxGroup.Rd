@@ -72,5 +72,7 @@ HTML
 Accessibility compliant version of shinyWidgets::prettyCheckboxGroup
 }
 \examples{
-\dontrun{}
+\dontrun{
+
+}
 }

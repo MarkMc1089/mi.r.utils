@@ -23,5 +23,7 @@ HTML
 Accessibility compliant version of shinyBS::bsCollapse
 }
 \examples{
-\dontrun{}
+\dontrun{
+
+}
 }

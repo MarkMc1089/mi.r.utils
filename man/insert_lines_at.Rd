@@ -20,5 +20,7 @@ Vector of characters
 Title
 }
 \examples{
-\dontrun{}
+\dontrun{
+
+}
 }

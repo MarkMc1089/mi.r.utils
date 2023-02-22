@@ -7,7 +7,9 @@
 #' @return Used for side effects
 #' @export
 #'
-#' @examples \dontrun{}
+#' @examples \dontrun{
+#'
+#' }
 check_overwrite <- function(files, backup_dirs, overwrite) {
   .check_overwrite <- function(.file, .backup_dir, overwrite) {
     if (file.exists(.file)) {
@@ -41,15 +43,19 @@ check_overwrite <- function(files, backup_dirs, overwrite) {
 #' @return Used for side effects
 #' @export
 #'
-#' @examples \dontrun{}
+#' @examples \dontrun{
+#'
+#' }
 create_app_r <- function(app_title, backup_dir = NULL,
                          overwrite = FALSE, open = FALSE) {
   app_r <- "app.R"
   check_overwrite(app_r, backup_dir, overwrite)
 
   app_r_lines <- readLines(
-    system.file("templates", "app_template.txt", package = "projecthooks")
-    # "templates/app_template.txt"
+    system.file(
+      "templates", "app_template.txt",
+      package = "projecthooks"
+    )
   )
   app_r_lines <- glue_collapse(app_r_lines, sep = "\n")
 
@@ -70,7 +76,9 @@ create_app_r <- function(app_title, backup_dir = NULL,
 #' @return Used for side effects
 #' @export
 #'
-#' @examples \dontrun{}
+#' @examples \dontrun{
+#'
+#' }
 create_ui_r <- function(main_title, subtitle, backup_dir = NULL,
                         overwrite = FALSE, open = FALSE) {
   ui_dir <- dir_create("ui")
@@ -80,7 +88,6 @@ create_ui_r <- function(main_title, subtitle, backup_dir = NULL,
 
   ui_r_lines <- readLines(
     system.file("templates", "ui", "ui_template.txt", package = "projecthooks")
-    # "templates/ui/ui_template.txt"
   )
   ui_r_lines <- glue_collapse(ui_r_lines, sep = "\n")
 
@@ -99,7 +106,9 @@ create_ui_r <- function(main_title, subtitle, backup_dir = NULL,
 #' @return Vector of characters
 #' @export
 #'
-#' @examples \dontrun{}
+#' @examples \dontrun{
+#'
+#' }
 insert_lines_at <- function(lines, to_insert, insert_at) {
   # edge cases: inserting at the end or the beginning (or past the end)
   if (is.na(insert_at) || insert_at >= length(lines)) {
@@ -125,7 +134,9 @@ insert_lines_at <- function(lines, to_insert, insert_at) {
 #' @return Used for side effects
 #' @export
 #'
-#' @examples \dontrun{}
+#' @examples \dontrun{
+#'
+#' }
 file_insert_lines <- function(.file, .lines, .match = NA,
                               .nth_match = 1, open = FALSE) {
   lines <- readLines(.file)
@@ -146,7 +157,9 @@ file_insert_lines <- function(.file, .lines, .match = NA,
 #' @return Vector of characters or NULL
 #' @export
 #'
-#' @examples \dontrun{}
+#' @examples \dontrun{
+#'
+#' }
 remove_line <- function(lines, to_remove) {
   remove_at <- match(to_remove, lines)
   if (!is.na(remove_at)) {
@@ -169,7 +182,9 @@ remove_line <- function(lines, to_remove) {
 #' @return Used for side effects
 #' @export
 #'
-#' @examples \dontrun{}
+#' @examples \dontrun{
+#'
+#' }
 file_remove_line <- function(.file, .match = NA, open = FALSE) {
   lines <- readLines(.file)
   lines <- remove_line(lines, .match)
@@ -191,7 +206,9 @@ file_remove_line <- function(.file, .match = NA, open = FALSE) {
 #' @return Used for side effects
 #' @export
 #'
-#' @examples \dontrun{}
+#' @examples \dontrun{
+#'
+#' }
 add_page <- function(page_name, page_menu_name = page_name, visibility = "hidden",
                      backup_dirs = NULL, overwrite = FALSE, open = FALSE) {
   page_file_name <- to_snake_case(page_name)
@@ -206,7 +223,6 @@ add_page <- function(page_name, page_menu_name = page_name, visibility = "hidden
 
   page_r_temp <- readLines(
     system.file("templates", "ui", "ui_page_template.txt", package = "projecthooks")
-    # "templates/ui/ui_page_template.txt"
   )
   page_r_temp <- glue(glue_collapse(page_r_temp, sep = "\n"))
 
@@ -259,7 +275,9 @@ add_page <- function(page_name, page_menu_name = page_name, visibility = "hidden
 #' @return Used for side effects
 #' @export
 #'
-#' @examples \dontrun{}
+#' @examples \dontrun{
+#'
+#' }
 add_pages <- function(pages, page_menu_names = pages, backup_dirs = NULL,
                       overwrite = FALSE, open = FALSE) {
   add_page(
@@ -288,7 +306,9 @@ add_pages <- function(pages, page_menu_names = pages, backup_dirs = NULL,
 #' @return Used for side effects
 #' @export
 #'
-#' @examples \dontrun{}
+#' @examples \dontrun{
+#'
+#' }
 remove_page <- function(page_name, page_menu_name = page_name,
                         backup_dirs = NULL, open = FALSE) {
   page_file_name <- to_snake_case(page_name)
@@ -373,7 +393,9 @@ remove_page <- function(page_name, page_menu_name = page_name,
 #' @return Used for side effects
 #' @export
 #'
-#' @examples \dontrun{}
+#' @examples \dontrun{
+#'
+#' }
 remove_pages <- function(pages, page_menu_names = pages,
                          backup_dirs = NULL, open = FALSE) {
   walk2(
@@ -396,7 +418,9 @@ remove_pages <- function(pages, page_menu_names = pages,
 #' @return Used for side effects
 #' @export
 #'
-#' @examples \dontrun{}
+#' @examples \dontrun{
+#'
+#' }
 create_output <- function(output_name, render_func, output_func, args) {
   if (tolower(output_func) == "custom") {
     output_func <- "{CUSTOM_FUNC}"
@@ -412,7 +436,6 @@ create_output <- function(output_name, render_func, output_func, args) {
 
   output_temp <- readLines(
     system.file("templates", "server", "output_template.txt", package = "projecthooks")
-    # "templates/server/output_template.txt"
   )
   if (output_func == "{CUSTOM_FUNC}") {
     comments <- rep("# ", length(output_temp))
@@ -434,7 +457,9 @@ create_output <- function(output_name, render_func, output_func, args) {
 #' @return Used for side effects
 #' @export
 #'
-#' @examples \dontrun{}
+#' @examples \dontrun{
+#'
+#' }
 add_output <- function(page, output_name, render_func, output_func, args) {
   output <- create_output(output_name, render_func, output_func, args)
 
@@ -455,26 +480,34 @@ add_output <- function(page, output_name, render_func, output_func, args) {
 #' @return Used for side effects
 #' @export
 #'
-#' @examples \dontrun{}
+#' @examples \dontrun{
+#'
+#' }
 add_ui_element <- function(page, label, output_name, ui_func, section_num,
                            use_comment_group, use_aspect_radio) {
   if (use_comment_group) {
     element_temp <- readLines(
-      system.file("templates", "ui", "ui_comment_group_template.txt", package = "projecthooks")
-      # "templates/ui/ui_comment_group_template.txt"
+      system.file(
+        "templates", "ui", "ui_comment_group_template.txt",
+        package = "projecthooks"
+      )
     )
     group_select_id <- glue("{output_name}_group")
   } else if (use_aspect_radio) {
     element_temp <- readLines(
-      system.file("templates", "ui", "ui_stacked_vertical_radio_template.txt", package = "projecthooks")
-      # "templates/ui/ui_stacked_vertical_radio_template.txt"
+      system.file(
+        "templates", "ui", "ui_stacked_vertical_radio_template.txt",
+        package = "projecthooks"
+      )
     )
     radio_select_id <- glue("{output_name}_radio")
     radio_select_choices <- glue("{output_name}_choices")
   } else {
     element_temp <- readLines(
-      system.file("templates", "ui", "ui_element_template.txt", package = "projecthooks")
-      # "templates/ui/ui_element_template.txt"
+      system.file(
+        "templates", "ui", "ui_element_template.txt",
+        package = "projecthooks"
+      )
     )
   }
 
@@ -508,7 +541,9 @@ add_ui_element <- function(page, label, output_name, ui_func, section_num,
 #' @return Used for side effects
 #' @export
 #'
-#' @examples \dontrun{}
+#' @examples \dontrun{
+#'
+#' }
 add_ui <- function(page, section, label, output_name, ui_func, section_num,
                    use_comment_group, use_aspect_radio) {
   # section may exist already
@@ -521,7 +556,6 @@ add_ui <- function(page, section, label, output_name, ui_func, section_num,
     # section does not exist, so add
     section_temp <- readLines(
       system.file("templates", "ui", "ui_section_template.txt", package = "projecthooks")
-      # "templates/ui/ui_section_template.txt"
     )
     new_section <- glue(glue_collapse(section_temp, sep = "\n"), .trim = FALSE)
     target <- glue("  htmlOutput(\"{page_file_name}trigger\")")
@@ -544,7 +578,9 @@ add_ui <- function(page, section, label, output_name, ui_func, section_num,
 #' @return Vector of type corresponding to the data
 #' @export
 #'
-#' @examples \dontrun{}
+#' @examples \dontrun{
+#'
+#' }
 pull_value <- function(.data, .property) {
   .data %>%
     filter(.data$property == .property) %>%
@@ -565,27 +601,20 @@ pull_value <- function(.data, .property) {
 #' @return Used for side effects
 #' @export
 #'
-#' @examples \dontrun{}
+#' @examples \dontrun{
+#'
+#' }
 summarise_data <- function(.data, .data_meta) {
   with_locale(c("LC_CTYPE" = "Chinese"), {
     suppress_warnings(
       {
         print(skim(.data))
-        # skim_data <- skim_with(numeric = sfl(hist = NULL))(.data)
       },
       endsWith,
       "value(s) of \"\" that have been converted to \"empty\"."
     )
     Sys.sleep(0.01)
   })
-
-  # cat("", sep = "\n")
-  #
-  # level_cols <- .data_meta %>%
-  #   filter(startsWith(transform_to, "tidy_levels"))
-  #
-  # print(summary(.data %>% select(all_of(level_cols$rename_to))))
-  # skim_data
 }
 
 
@@ -597,7 +626,9 @@ summarise_data <- function(.data, .data_meta) {
 #' @return Vector of characters
 #' @export
 #'
-#' @examples \dontrun{}
+#' @examples \dontrun{
+#'
+#' }
 create_levels <- function(data, levels_meta) {
   level_names <- levels_meta %>%
     select(.data$output_name) %>%
@@ -649,7 +680,8 @@ create_levels <- function(data, levels_meta) {
         keep(startsWith(names(.), prefix)) %>%
         set_names(str_replace(names(.), names(.), prefix))
     }
-  ) %>% squash()
+  ) %>%
+    squash()
 
   multi_col_levels <- map(
     set_names(multi_col_level_names),
@@ -677,7 +709,9 @@ create_levels <- function(data, levels_meta) {
 #' @return Used for side effects
 #' @export
 #'
-#' @examples \dontrun{}
+#' @examples \dontrun{
+#'
+#' }
 add_levels <- function(data, levels_meta, backup_dir = NULL,
                        overwrite = FALSE, open = FALSE) {
   levels <- create_levels(data, levels_meta)
@@ -689,7 +723,6 @@ add_levels <- function(data, levels_meta, backup_dir = NULL,
 
   levels_r_temp <- readLines(
     system.file("templates", "global", "levels_template.txt", package = "projecthooks")
-    # "templates/global/levels_template.txt"
   )
   levels_r_temp <- glue(glue_collapse(levels_r_temp, sep = "\n"))
 
@@ -706,7 +739,9 @@ add_levels <- function(data, levels_meta, backup_dir = NULL,
 #' @return Vector of characters
 #' @export
 #'
-#' @examples \dontrun{}
+#' @examples \dontrun{
+#'
+#' }
 create_choices <- function(choices_meta) {
   choices <- setNames(choices_meta$rename_to, choices_meta$output_name)
   choices <- map(choices, ~ paste0("  \"", .x, "\"", " = \"", .x, "\""))
@@ -733,7 +768,9 @@ create_choices <- function(choices_meta) {
 #' @return Used for side effects
 #' @export
 #'
-#' @examples \dontrun{}
+#' @examples \dontrun{
+#'
+#' }
 add_choices <- function(choices_meta, backup_dir = NULL,
                         overwrite = FALSE, open = FALSE) {
   choices <- create_choices(choices_meta)

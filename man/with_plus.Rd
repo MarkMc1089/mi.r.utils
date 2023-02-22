@@ -18,5 +18,7 @@ Character
 Title
 }
 \examples{
-\dontrun{}
+\dontrun{
+
+}
 }

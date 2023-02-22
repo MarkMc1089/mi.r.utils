@@ -51,5 +51,7 @@ HTML
 Accessibility compliant Shiny radio buttons
 }
 \examples{
-\dontrun{}
+\dontrun{
+
+}
 }

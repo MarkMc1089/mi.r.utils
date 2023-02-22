@@ -18,5 +18,7 @@ Character
 Set number of decimal places of number and return as char.
 }
 \examples{
-\dontrun{}
+\dontrun{
+
+}
 }

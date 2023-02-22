@@ -16,5 +16,7 @@ Character
 Set format of date to abbreviated month and full year.
 }
 \examples{
-\dontrun{}
+\dontrun{
+
+}
 }

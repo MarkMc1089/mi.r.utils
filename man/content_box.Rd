@@ -18,5 +18,7 @@ HTML
 Wrap given tags in a content box
 }
 \examples{
-\dontrun{}
+\dontrun{
+
+}
 }

@@ -22,5 +22,7 @@ Selectively suppress warnings using a given function to check for content in
 warning messages
 }
 \examples{
-\dontrun{}
+\dontrun{
+
+}
 }

@@ -22,5 +22,7 @@ Used for side effects
 Title
 }
 \examples{
-\dontrun{}
+\dontrun{
+
+}
 }

@@ -18,5 +18,7 @@ HTML
 Style text as label
 }
 \examples{
-\dontrun{}
+\dontrun{
+
+}
 }
