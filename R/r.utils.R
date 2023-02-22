@@ -1,9 +1,9 @@
-#' \code{r.utils} package
+#' \code{mi.r.utils} package
 #'
 #' Collection Of Functions, Particularly Ones Used In Shiny Apps
 #'
 #' @docType package
-#' @name r.utils
+#' @name mi.r.utils
 #'
 #' @importFrom shiny tags validateCssUnit selectInput fluidRow column tagList
 #' @importFrom shiny restoreInput need validate withTags div h2 h3 span br

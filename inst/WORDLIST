@@ -6,7 +6,9 @@ barcharts
 bg
 bs
 bsCollapse
+CMD
 CN
+Codecov
 colorRampPalette
 colour
 colours
@@ -29,6 +31,7 @@ fo
 fs
 generatePretty
 ggplot
+github
 gl
 grDevices
 highcharter
@@ -38,6 +41,7 @@ htmlwidgets
 https
 hu
 hy
+io
 ja
 js
 ka
@@ -45,6 +49,7 @@ kh
 kk
 ko
 kr
+Lifecycle
 linter
 linters
 lt
@@ -52,6 +57,7 @@ lubridate
 lv
 magrittr
 mcpherson
+MERCHANTABILITY
 mk
 mn
 nb
@@ -60,11 +66,14 @@ NES
 nhs
 nhsbsa
 nl
+NONINFRINGEMENT
 NPS
 parseable
 plotly
+pre
 prettyCheckboxGroup
 purrr
+repo
 rlang
 ro
 Roxygen
@@ -82,6 +91,7 @@ sl
 snakecase
 sr
 stringr
+sublicense
 sv
 sw
 testthat
@@ -92,6 +102,7 @@ tooltip
 TW
 UI
 uk
+WIP
 withr
 www
 YMD

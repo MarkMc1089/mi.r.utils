@@ -1,4 +1,4 @@
-Package: r.utils
+Package: mi.r.utils
 Title: Collection Of Functions, Particularly Ones Used In Shiny Apps
 Version: 0.0.0.9000
 Authors@R: 

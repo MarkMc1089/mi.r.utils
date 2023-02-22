@@ -7,6 +7,6 @@
 # * https://testthat.r-lib.org/reference/test_package.html#special-files
 
 library(testthat)
-library(r.utils)
+library(mi.r.utils)
 
-test_check("r.utils")
+test_check("mi.r.utils")
