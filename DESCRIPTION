@@ -6,7 +6,7 @@ Authors@R:
 Description: Collects all the functions I use, mostly ones used in Shiny
     dashboards.
 License: MIT + file LICENSE
-Needs:
+Depends:
     projecthooks
 Imports:
     dplyr,
