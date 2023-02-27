@@ -6,6 +6,8 @@ Authors@R:
 Description: Collects all the functions I use, mostly ones used in Shiny
     dashboards.
 License: MIT + file LICENSE
+Needs:
+    projecthooks
 Imports:
     dplyr,
     DT,
@@ -19,7 +21,6 @@ Imports:
     lubridate,
     magrittr,
     plotly,
-    projecthooks,
     purrr,
     rlang,
     rstudioapi,
