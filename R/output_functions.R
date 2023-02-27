@@ -915,7 +915,7 @@ stacked_vertical <- function(data, columns, cols_start_with = TRUE,
     )
 
   if (is.null(colours)) {
-    colours <- colour_ramp(length(names(responses) %>% unique()))
+    colours <- colour_ramp(length(unique(responses)))
   }
 
   if (!isFALSE(show_mean)) {
@@ -1325,7 +1325,7 @@ pie <- function(data, question_column, responses, colours = NULL,
     )
 
   if (is.null(colours)) {
-    colours <- colour_ramp(length(names(responses) %>% unique()))
+    colours <- colour_ramp(length(unique(responses)))
   }
 
   chart <- chart %>%
