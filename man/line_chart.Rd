@@ -7,7 +7,7 @@ average); measure should be either "NPS" or "NES"}
 \usage{
 line_chart(
   data,
-  measure,
+  measure_column,
   measure_aux = NULL,
   targets = NULL,
   three_month_rolling = FALSE,
@@ -21,7 +21,7 @@ line_chart(
 \arguments{
 \item{data}{Data}
 
-\item{measure}{Character}
+\item{measure_column}{Character}
 
 \item{measure_aux}{Data}
 

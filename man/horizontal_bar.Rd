@@ -8,8 +8,9 @@ feature. Use for non-rating style questions with more than 3 responses only.}
 horizontal_bar(
   data,
   columns,
+  cols_start_with = FALSE,
   responses,
-  colour,
+  colour = "#005EB8",
   chart_title = NULL,
   arrange_desc = TRUE,
   low_base = 100,
@@ -20,6 +21,8 @@ horizontal_bar(
 \item{data}{Data}
 
 \item{columns}{Vector of characters}
+
+\item{cols_start_with}{Boolean}
 
 \item{responses}{Variable}
 

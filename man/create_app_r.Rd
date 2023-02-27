@@ -4,9 +4,17 @@
 \alias{create_app_r}
 \title{Title}
 \usage{
-create_app_r(app_title, backup_dir = NULL, overwrite = FALSE, open = FALSE)
+create_app_r(
+  app_type,
+  app_title,
+  backup_dir = NULL,
+  overwrite = FALSE,
+  open = FALSE
+)
 }
 \arguments{
+\item{app_type}{Character}
+
 \item{app_title}{Character}
 
 \item{backup_dir}{Filepath}

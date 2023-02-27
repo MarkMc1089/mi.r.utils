@@ -9,7 +9,7 @@ pie(
   data,
   question_column,
   responses,
-  colours,
+  colours = NULL,
   chart_title = NULL,
   low_base = 100
 )

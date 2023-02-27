@@ -5,6 +5,7 @@
 \title{Title}
 \usage{
 add_ui(
+  app_type,
   page,
   section,
   label,
@@ -16,6 +17,8 @@ add_ui(
 )
 }
 \arguments{
+\item{app_type}{Character}
+
 \item{page}{Character}
 
 \item{section}{Character}

@@ -160,7 +160,7 @@ timeseries <- function(data, is_percentage = FALSE, units = "",
 #' average); measure should be either "NPS" or "NES"
 #'
 #' @param data Data
-#' @param measure Character
+#' @param measure_column Character
 #' @param measure_aux Data
 #' @param targets Data
 #' @param three_month_rolling Boolean
@@ -176,7 +176,7 @@ timeseries <- function(data, is_percentage = FALSE, units = "",
 #' @examples \dontrun{
 #'
 #' }
-line_chart <- function(data, measure, measure_aux = NULL, targets = NULL,
+line_chart <- function(data, measure_column, measure_aux = NULL, targets = NULL,
                        three_month_rolling = FALSE, low_base = 100,
                        title = NULL, subtitle = NULL, month_col,
                        last_valid_month_range_selection) { # Exclude Linting
@@ -209,25 +209,25 @@ line_chart <- function(data, measure, measure_aux = NULL, targets = NULL,
     )
   }
 
-  measure_column <- switch(measure,
-    "NPS" = "nps",
-    "NES" = "nes"
-  )
-
   nps_groups <- c(
-    "Promoter" = "Promoters",
-    "Passive" = "Passives",
-    "Detractor" = "Detractors"
+    "Promoter",
+    "Passive",
+    "Detractor"
   )
 
-  nes_ratings <- c(
-    "Extremely difficult",
-    "Very difficult",
-    "Fairly difficult",
-    "Neither easy nor difficult",
-    "Fairly easy",
-    "Very easy",
-    "Extremely easy"
+  nes_responses <- c(
+    "Extremely easy"             = "Extremely easy",
+    "Very easy"                  = "Very easy",
+    "Fairly easy"                = "Fairly easy",
+    "Neither easy nor difficult" = "Neither easy nor difficult",
+    "Fairly difficult"           = "Fairly difficult",
+    "Very difficult"             = "Very difficult",
+    "Extremely difficult"        = "Extremely difficult"
+  )
+
+  measure <- switch(measure_column,
+    "nps" = "NPS",
+    "nes" = "NES"
   )
 
   chart <- data %>%
@@ -252,9 +252,9 @@ line_chart <- function(data, measure, measure_aux = NULL, targets = NULL,
           ) %>%
           mutate(
             group = case_when(
-              !!sym(measure_column) %in% c(c(1:6), nes_ratings[1:3]) ~ "Detractor",
-              !!sym(measure_column) %in% c(c(7:8), nes_ratings[4:5]) ~ "Passive",
-              !!sym(measure_column) %in% c(c(9:10), nes_ratings[6:7]) ~ "Promoter"
+              !!sym(measure_column) %in% c(c(1:6), nes_responses[1:3]) ~ "Detractor",
+              !!sym(measure_column) %in% c(c(7:8), nes_responses[4:5]) ~ "Passive",
+              !!sym(measure_column) %in% c(c(9:10), nes_responses[6:7]) ~ "Promoter"
             )
           ) %>%
           group_by(
@@ -267,7 +267,7 @@ line_chart <- function(data, measure, measure_aux = NULL, targets = NULL,
             do.call(
               expand.grid,
               setNames(
-                list(unique(data[[month_col]]), names(nps_groups)),
+                list(unique(data[[month_col]]), nps_groups),
                 list(month_col, "group")
               )
             ),
@@ -530,9 +530,9 @@ nps_group_chart <- function(data, three_month_rolling = FALSE, low_base = 100,
   }
 
   nps_groups <- c(
-    "Promoter" = "Promoters",
-    "Passive" = "Passives",
-    "Detractor" = "Detractors"
+    "Promoter",
+    "Passive",
+    "Detractor"
   )
 
   chart <- data %>%
@@ -568,7 +568,7 @@ nps_group_chart <- function(data, three_month_rolling = FALSE, low_base = 100,
       do.call(
         expand.grid,
         setNames(
-          list(unique(data[[month_col]]), names(nps_groups)),
+          list(unique(data[[month_col]]), nps_groups),
           list(month_col, "group")
         )
       ),
@@ -802,11 +802,12 @@ group_table <- function(data, comment_column, group_select = NULL,
                         comment_name_in_DT = "Reasons", month_col) { # Exclude Linting
   validate(need(nrow(data) > 0, "No data for current filter selection!"))
 
+  columns <- c(month_col, comment_column)
+  if (!is.null(group_select)) columns <- c(columns, "nps")
+
   table <- data %>%
     select(
-      month_col,
-      !!comment_column,
-      .data$nps
+      all_of(columns)
     ) %>%
     na.omit() %>%
     filter(
@@ -836,23 +837,13 @@ group_table <- function(data, comment_column, group_select = NULL,
     }
   }
 
+  columns <- c(month_col, comment_column)
+  if (!is.null(group_select)) columns <- c(columns, "group")
+
   table <- table %>%
-    {
-      if (!is.null(group_select)) {
-        select(
-          .,
-          month_col,
-          !!comment_column,
-          .data$group
-        )
-      } else {
-        select(
-          .,
-          month_col,
-          !!comment_column
-        )
-      }
-    } %>%
+    select(
+      all_of(columns)
+    ) %>%
     arrange(
       desc(!!month_col),
       !!comment_column
@@ -876,10 +867,12 @@ group_table <- function(data, comment_column, group_select = NULL,
 #'
 #' @param data Data
 #' @param columns Vector of characters
+#' @param cols_start_with Boolean
 #' @param responses Variable
 #' @param colours Vector of characters
 #' @param legend_title Character
 #' @param low_base Int
+#' @param radio_select Character
 #' @param show_mean Boolean
 #' @param month_col Character
 #'
@@ -889,9 +882,41 @@ group_table <- function(data, comment_column, group_select = NULL,
 #' @examples \dontrun{
 #'
 #' }
-stacked_vertical <- function(data, columns, responses, colours, legend_title,
-                             low_base = 100, show_mean = FALSE, month_col) {
+stacked_vertical <- function(data, columns, cols_start_with = TRUE,
+                             responses, colours = NULL,
+                             legend_title = element_blank(), low_base = 100,
+                             radio_select = NULL, show_mean = FALSE, month_col) {
   validate(need(nrow(data) > 0, "No data for current filter selection!"))
+
+  column_prefix <- columns
+
+  if (!is.null(radio_select)) {
+    columns <- radio_select
+  } else {
+    if (cols_start_with) columns <- names(data %>% select(starts_with(columns)))
+  }
+
+  options <- data %>%
+    select(
+      !!month_col,
+      all_of(columns)
+    ) %>%
+    pivot_longer(
+      -!!month_col,
+      names_to = "question_column",
+      values_drop_na = TRUE
+    ) %>%
+    filter(.data$value != "") %>%
+    mutate(
+      question_column = case_when(
+        length(unique(.data$question_column)) == 1 ~ .data$value,
+        TRUE ~ .data$question_column
+      )
+    )
+
+  if (is.null(colours)) {
+    colours <- colour_ramp(length(names(responses) %>% unique()))
+  }
 
   if (!isFALSE(show_mean)) {
     means <- data %>%
@@ -915,26 +940,11 @@ stacked_vertical <- function(data, columns, responses, colours, legend_title,
   }
 
   ggplotly(
-    data %>%
-      select(
-        !!month_col,
-        all_of(columns)
-      ) %>%
-      pivot_longer(
-        -!!month_col,
-        names_to = "question_column",
-        values_drop_na = TRUE
-      ) %>%
-      mutate(
-        question_column = case_when(
-          length(unique(.data$question_column)) == 1 ~ value,
-          TRUE ~ .data$question_column
-        )
-      ) %>%
+    options %>%
       mutate(
         question_column = factor(
           .data$question_column,
-          levels = names(responses),
+          levels = names(responses) %||% responses,
           labels = responses
         )
       ) %>%
@@ -1301,8 +1311,8 @@ stacked_horizontal <- function(data, question_column, responses, colours,
 #' @examples \dontrun{
 #'
 #' }
-pie <- function(data, question_column, responses, colours, chart_title = NULL,
-                low_base = 100) {
+pie <- function(data, question_column, responses, colours = NULL,
+                chart_title = NULL, low_base = 100) {
   validate(need(nrow(data) > 0, "No data for current filter selection!"))
 
   chart <- data %>%
@@ -1312,16 +1322,23 @@ pie <- function(data, question_column, responses, colours, chart_title = NULL,
     na.omit() %>%
     filter(
       !!sym(question_column) != ""
-    ) %>%
+    )
+
+  if (is.null(colours)) {
+    colours <- colour_ramp(length(names(responses) %>% unique()))
+  }
+
+  chart <- chart %>%
     mutate(
       !!sym(question_column) := factor(
         !!sym(question_column),
-        levels = names(responses),
+        levels = names(responses) %||% responses,
         labels = responses
       )
     ) %>%
     group_by(
-      !!sym(question_column)
+      !!sym(question_column),
+      .drop = FALSE
     ) %>%
     summarise(
       n = n()
@@ -1331,6 +1348,9 @@ pie <- function(data, question_column, responses, colours, chart_title = NULL,
     ) %>%
     arrange(
       !!sym(question_column)
+    ) %>%
+    mutate(
+      colour = colours[which(levels(!!sym(question_column)) == !!sym(question_column))]
     )
 
   base <- sum(chart$n)
@@ -1344,6 +1364,7 @@ pie <- function(data, question_column, responses, colours, chart_title = NULL,
       hcaes(
         x = !!sym(question_column),
         y = n,
+        color = .data$colour
       )
     ) %>%
     {
@@ -1400,6 +1421,7 @@ pie <- function(data, question_column, responses, colours, chart_title = NULL,
 #'
 #' @param data Data
 #' @param columns Vector of characters
+#' @param cols_start_with Boolean
 #' @param responses Variable
 #' @param colour Character
 #' @param chart_title Character
@@ -1413,26 +1435,34 @@ pie <- function(data, question_column, responses, colours, chart_title = NULL,
 #' @examples \dontrun{
 #'
 #' }
-horizontal_bar <- function(data, columns, responses, colour, chart_title = NULL,
-                           arrange_desc = TRUE, low_base = 100, month_col) {
+horizontal_bar <- function(data, columns, cols_start_with = FALSE,
+                           responses, colour = "#005EB8",
+                           chart_title = NULL, arrange_desc = TRUE,
+                           low_base = 100, month_col) {
   validate(need(nrow(data) > 0, "No data for current filter selection!"))
 
-  chart <- data %>%
+  column_prefix <- columns
+  if (cols_start_with) columns <- names(data %>% select(starts_with(columns)))
+
+  options <- data %>%
     select(
-      month_col,
+      !!month_col,
       all_of(columns)
     ) %>%
     pivot_longer(
-      -month_col,
+      -!!month_col,
       names_to = "question_column",
       values_drop_na = TRUE
     ) %>%
+    filter(.data$value != "") %>%
     mutate(
       question_column = case_when(
-        length(unique(.data$question_column)) == 1 ~ value,
+        length(unique(.data$question_column)) == 1 ~ .data$value,
         TRUE ~ .data$question_column
       )
-    ) %>%
+    )
+
+  chart <- options %>%
     mutate(
       question_column = factor(
         .data$question_column,
@@ -1454,7 +1484,7 @@ horizontal_bar <- function(data, columns, responses, colour, chart_title = NULL,
     select(
       .data$question_column,
       .data$percentage,
-      n
+      .data$n
     ) %>%
     {
       if (arrange_desc) {

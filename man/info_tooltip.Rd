@@ -4,11 +4,7 @@
 \alias{info_tooltip}
 \title{Create info tooltip to be used with tippy.js}
 \usage{
-info_tooltip(
-  content,
-  style =
-    glue("display: inline; padding-left: 1px; font-size: \\\\\\n                                      1 rem; font-weight: 400")
-)
+info_tooltip(content, style = NULL)
 }
 \arguments{
 \item{content}{HTML elements}

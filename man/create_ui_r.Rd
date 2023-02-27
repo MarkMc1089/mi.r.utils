@@ -5,6 +5,7 @@
 \title{Title}
 \usage{
 create_ui_r(
+  app_type,
   main_title,
   subtitle,
   backup_dir = NULL,
@@ -13,6 +14,8 @@ create_ui_r(
 )
 }
 \arguments{
+\item{app_type}{Character}
+
 \item{main_title}{Character}
 
 \item{subtitle}{Character}

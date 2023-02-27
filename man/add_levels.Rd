@@ -5,6 +5,7 @@
 \title{Title}
 \usage{
 add_levels(
+  app_type,
   data,
   levels_meta,
   backup_dir = NULL,
@@ -13,6 +14,8 @@ add_levels(
 )
 }
 \arguments{
+\item{app_type}{Character}
+
 \item{data}{Data}
 
 \item{levels_meta}{Data}
