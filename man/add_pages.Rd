@@ -5,6 +5,7 @@
 \title{Title}
 \usage{
 add_pages(
+  app_type,
   pages,
   page_menu_names = pages,
   backup_dirs = NULL,
@@ -13,6 +14,8 @@ add_pages(
 )
 }
 \arguments{
+\item{app_type}{Character}
+
 \item{pages}{Vector of characters}
 
 \item{page_menu_names}{Vector of characters}

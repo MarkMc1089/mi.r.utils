@@ -7,10 +7,12 @@
 stacked_vertical(
   data,
   columns,
+  cols_start_with = TRUE,
   responses,
-  colours,
-  legend_title,
+  colours = NULL,
+  legend_title = element_blank(),
   low_base = 100,
+  radio_select = NULL,
   show_mean = FALSE,
   month_col
 )
@@ -20,6 +22,8 @@ stacked_vertical(
 
 \item{columns}{Vector of characters}
 
+\item{cols_start_with}{Boolean}
+
 \item{responses}{Variable}
 
 \item{colours}{Vector of characters}
@@ -27,6 +31,8 @@ stacked_vertical(
 \item{legend_title}{Character}
 
 \item{low_base}{Int}
+
+\item{radio_select}{Character}
 
 \item{show_mean}{Boolean}
 

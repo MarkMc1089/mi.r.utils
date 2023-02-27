@@ -6,13 +6,13 @@
 #' @name mi.r.utils
 #'
 #' @importFrom shiny tags validateCssUnit selectInput fluidRow column tagList
-#' @importFrom shiny restoreInput need validate withTags div h2 h3 span br
+#' @importFrom shiny restoreInput need validate withTags div h2 h3 span br radioButtons
 #' @importFrom glue glue glue_collapse
 #' @importFrom htmltools attachDependencies htmlDependency tagQuery HTML css
 #' @importFrom zoo as.yearmon
 #' @importFrom grDevices colorRampPalette
 #' @importFrom shinyBS bsCollapse
-#' @importFrom dplyr mutate filter left_join case_when group_by count ungroup
+#' @importFrom dplyr mutate filter left_join case_when group_by count ungroup distinct
 #' @importFrom dplyr full_join arrange summarise all_of bind_rows n between desc
 #' @importFrom dplyr select across if_else starts_with pull add_count lag
 #' @importFrom highcharter highchart hc_add_series hc_xAxis hc_tooltip hc_plotOptions
@@ -38,5 +38,5 @@
 #' @importFrom shinyWidgets prettyCheckboxGroup
 NULL
 
-## quiets concerns of R CMD check re: the .'s that appear in pipelines
+## quiets concerns of R CMD check re. the .'s that appear in pipelines
 if (getRversion() >= "2.15.1") utils::globalVariables(c("."))

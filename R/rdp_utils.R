@@ -35,6 +35,7 @@ check_overwrite <- function(files, backup_dirs, overwrite) {
 
 #' Title
 #'
+#' @param app_type Character
 #' @param app_title Character
 #' @param backup_dir Filepath
 #' @param overwrite Boolean
@@ -46,18 +47,18 @@ check_overwrite <- function(files, backup_dirs, overwrite) {
 #' @examples \dontrun{
 #'
 #' }
-create_app_r <- function(app_title, backup_dir = NULL,
+create_app_r <- function(app_type, app_title, backup_dir = NULL,
                          overwrite = FALSE, open = FALSE) {
   app_r <- "app.R"
   check_overwrite(app_r, backup_dir, overwrite)
 
   app_r_lines <- readLines(
     system.file(
-      "templates", "app_template.txt",
+      app_type, "templates", "app_template.txt",
       package = "projecthooks"
     )
   )
-  app_r_lines <- glue_collapse(app_r_lines, sep = "\n")
+  app_r_lines <- glue(glue_collapse(app_r_lines, sep = "\n"), .trim = FALSE)
 
   writeLines(app_r_lines, app_r)
 
@@ -67,6 +68,7 @@ create_app_r <- function(app_title, backup_dir = NULL,
 
 #' Title
 #'
+#' @param app_type Character
 #' @param main_title Character
 #' @param subtitle Character
 #' @param backup_dir Filepath
@@ -79,7 +81,7 @@ create_app_r <- function(app_title, backup_dir = NULL,
 #' @examples \dontrun{
 #'
 #' }
-create_ui_r <- function(main_title, subtitle, backup_dir = NULL,
+create_ui_r <- function(app_type, main_title, subtitle, backup_dir = NULL,
                         overwrite = FALSE, open = FALSE) {
   ui_dir <- dir_create("ui")
   ui_r <- "ui/ui.R"
@@ -87,9 +89,12 @@ create_ui_r <- function(main_title, subtitle, backup_dir = NULL,
   check_overwrite(ui_r, backup_dir, overwrite)
 
   ui_r_lines <- readLines(
-    system.file("templates", "ui", "ui_template.txt", package = "projecthooks")
+    system.file(
+      app_type, "templates", "ui", "ui_template.txt",
+      package = "projecthooks"
+    )
   )
-  ui_r_lines <- glue_collapse(ui_r_lines, sep = "\n")
+  ui_r_lines <- glue(glue_collapse(ui_r_lines, sep = "\n"), .trim = FALSE)
 
   writeLines(ui_r_lines, ui_r)
 
@@ -196,6 +201,7 @@ file_remove_line <- function(.file, .match = NA, open = FALSE) {
 
 #' Title
 #'
+#' @param app_type Character
 #' @param page_name Character
 #' @param page_menu_name Character
 #' @param visibility "hidden" if not first page, "visible" for first page
@@ -209,20 +215,24 @@ file_remove_line <- function(.file, .match = NA, open = FALSE) {
 #' @examples \dontrun{
 #'
 #' }
-add_page <- function(page_name, page_menu_name = page_name, visibility = "hidden",
-                     backup_dirs = NULL, overwrite = FALSE, open = FALSE) {
+add_page <- function(app_type, page_name, page_menu_name = page_name,
+                     visibility = "hidden", backup_dirs = NULL,
+                     overwrite = FALSE, open = FALSE) {
   page_file_name <- to_snake_case(page_name)
   page_dir <- dir_create(file.path("ui", "pages"))
-  page_r <- glue("ui/pages/{page_file_name}.R")
+  page_r <- glue("{page_dir}/{page_file_name}.R")
   server_dir <- dir_create("server")
-  server_r <- glue("server/{page_file_name}_outputs.R")
+  server_r <- glue("{server_dir}/{page_file_name}_outputs.R")
 
   check_overwrite(
     c(page_r, server_r), backup_dirs, overwrite
   )
 
   page_r_temp <- readLines(
-    system.file("templates", "ui", "ui_page_template.txt", package = "projecthooks")
+    system.file(
+      app_type, "templates", "ui", "ui_page_template.txt",
+      package = "projecthooks"
+    )
   )
   page_r_temp <- glue(glue_collapse(page_r_temp, sep = "\n"))
 
@@ -255,17 +265,17 @@ add_page <- function(page_name, page_menu_name = page_name, visibility = "hidden
   }
 
   target <- glue(
-    "      a(class = 'navigation homeitem item', '{page_menu_name}', ",
+    "        a(class = 'navigation homeitem item', '{page_menu_name}', ",
     "`data-value` = '{page_file_name}'),"
   )
   if (is.na(match(target, ui_lines))) {
-    file_insert_lines(ui_r, target, "    ### Add page links above", open = open)
+    file_insert_lines(ui_r, target, "        ### Add page links above", open = open)
   }
 }
 
 
 #' Title
-#'
+#' @param app_type Character
 #' @param pages Vector of characters
 #' @param page_menu_names Vector of characters
 #' @param backup_dirs Vector of filepaths
@@ -278,9 +288,10 @@ add_page <- function(page_name, page_menu_name = page_name, visibility = "hidden
 #' @examples \dontrun{
 #'
 #' }
-add_pages <- function(pages, page_menu_names = pages, backup_dirs = NULL,
-                      overwrite = FALSE, open = FALSE) {
+add_pages <- function(app_type, pages, page_menu_names = pages,
+                      backup_dirs = NULL, overwrite = FALSE, open = FALSE) {
   add_page(
+    app_type,
     pages[1],
     page_menu_names[1],
     visibility = "visible",
@@ -290,6 +301,7 @@ add_pages <- function(pages, page_menu_names = pages, backup_dirs = NULL,
     pages[-1],
     page_menu_names[-1],
     add_page,
+    app_type = app_type,
     visibility = "hidden",
     backup_dirs = backup_dirs, overwrite = overwrite, open = open
   )
@@ -410,6 +422,7 @@ remove_pages <- function(pages, page_menu_names = pages,
 
 #' Title
 #'
+#' @param app_type Character
 #' @param output_name Character
 #' @param render_func Function
 #' @param output_func Function
@@ -421,7 +434,7 @@ remove_pages <- function(pages, page_menu_names = pages,
 #' @examples \dontrun{
 #'
 #' }
-create_output <- function(output_name, render_func, output_func, args) {
+create_output <- function(app_type, output_name, render_func, output_func, args) {
   if (tolower(output_func) == "custom") {
     output_func <- "{CUSTOM_FUNC}"
     args <- ""
@@ -435,7 +448,10 @@ create_output <- function(output_name, render_func, output_func, args) {
   }
 
   output_temp <- readLines(
-    system.file("templates", "server", "output_template.txt", package = "projecthooks")
+    system.file(
+      app_type, "templates", "server", "output_template.txt",
+      package = "projecthooks"
+    )
   )
   if (output_func == "{CUSTOM_FUNC}") {
     comments <- rep("# ", length(output_temp))
@@ -448,6 +464,7 @@ create_output <- function(output_name, render_func, output_func, args) {
 
 #' Title
 #'
+#' @param app_type Character
 #' @param page Filepath
 #' @param output_name Character
 #' @param render_func Function
@@ -460,8 +477,8 @@ create_output <- function(output_name, render_func, output_func, args) {
 #' @examples \dontrun{
 #'
 #' }
-add_output <- function(page, output_name, render_func, output_func, args) {
-  output <- create_output(output_name, render_func, output_func, args)
+add_output <- function(app_type, page, output_name, render_func, output_func, args) {
+  output <- create_output(app_type, output_name, render_func, output_func, args)
 
   file_insert_lines(file.path("server/", page), output, .match = NA)
 }
@@ -469,6 +486,7 @@ add_output <- function(page, output_name, render_func, output_func, args) {
 # TODO: refactor and rename like create/add_output
 #' Title
 #'
+#' @param app_type Character
 #' @param page Character
 #' @param label Character
 #' @param output_name Character
@@ -483,12 +501,12 @@ add_output <- function(page, output_name, render_func, output_func, args) {
 #' @examples \dontrun{
 #'
 #' }
-add_ui_element <- function(page, label, output_name, ui_func, section_num,
+add_ui_element <- function(app_type, page, label, output_name, ui_func, section_num,
                            use_comment_group, use_aspect_radio) {
   if (use_comment_group) {
     element_temp <- readLines(
       system.file(
-        "templates", "ui", "ui_comment_group_template.txt",
+        app_type, "templates", "ui", "ui_comment_group_template.txt",
         package = "projecthooks"
       )
     )
@@ -496,7 +514,7 @@ add_ui_element <- function(page, label, output_name, ui_func, section_num,
   } else if (use_aspect_radio) {
     element_temp <- readLines(
       system.file(
-        "templates", "ui", "ui_stacked_vertical_radio_template.txt",
+        app_type, "templates", "ui", "ui_stacked_vertical_radio_template.txt",
         package = "projecthooks"
       )
     )
@@ -505,7 +523,7 @@ add_ui_element <- function(page, label, output_name, ui_func, section_num,
   } else {
     element_temp <- readLines(
       system.file(
-        "templates", "ui", "ui_element_template.txt",
+        app_type, "templates", "ui", "ui_element_template.txt",
         package = "projecthooks"
       )
     )
@@ -529,6 +547,7 @@ add_ui_element <- function(page, label, output_name, ui_func, section_num,
 # TODO: refactor and rename like create/add_output
 #' Title
 #'
+#' @param app_type Character
 #' @param page Character
 #' @param section Character
 #' @param label Character
@@ -544,7 +563,7 @@ add_ui_element <- function(page, label, output_name, ui_func, section_num,
 #' @examples \dontrun{
 #'
 #' }
-add_ui <- function(page, section, label, output_name, ui_func, section_num,
+add_ui <- function(app_type, page, section, label, output_name, ui_func, section_num,
                    use_comment_group, use_aspect_radio) {
   # section may exist already
   page_file_name <- to_snake_case(page)
@@ -555,7 +574,10 @@ add_ui <- function(page, section, label, output_name, ui_func, section_num,
   if (is.na(match(target, lines))) {
     # section does not exist, so add
     section_temp <- readLines(
-      system.file("templates", "ui", "ui_section_template.txt", package = "projecthooks")
+      system.file(
+        app_type, "templates", "ui", "ui_section_template.txt",
+        package = "projecthooks"
+      )
     )
     new_section <- glue(glue_collapse(section_temp, sep = "\n"), .trim = FALSE)
     target <- glue("  htmlOutput(\"{page_file_name}trigger\")")
@@ -565,7 +587,8 @@ add_ui <- function(page, section, label, output_name, ui_func, section_num,
   }
 
   add_ui_element(
-    page_r, label, output_name, ui_func, section_num, use_comment_group, use_aspect_radio
+    app_type, page_r, label, output_name, ui_func,
+    section_num, use_comment_group, use_aspect_radio
   )
 }
 
@@ -700,6 +723,7 @@ create_levels <- function(data, levels_meta) {
 
 #' Title
 #'
+#' @param app_type Character
 #' @param data Data
 #' @param levels_meta Data
 #' @param backup_dir Filepath
@@ -712,7 +736,7 @@ create_levels <- function(data, levels_meta) {
 #' @examples \dontrun{
 #'
 #' }
-add_levels <- function(data, levels_meta, backup_dir = NULL,
+add_levels <- function(app_type, data, levels_meta, backup_dir = NULL,
                        overwrite = FALSE, open = FALSE) {
   levels <- create_levels(data, levels_meta)
 
@@ -722,7 +746,10 @@ add_levels <- function(data, levels_meta, backup_dir = NULL,
   check_overwrite(levels_r, backup_dir, overwrite)
 
   levels_r_temp <- readLines(
-    system.file("templates", "global", "levels_template.txt", package = "projecthooks")
+    system.file(
+      app_type, "templates", "global", "levels_template.txt",
+      package = "projecthooks"
+    )
   )
   levels_r_temp <- glue(glue_collapse(levels_r_temp, sep = "\n"))
 

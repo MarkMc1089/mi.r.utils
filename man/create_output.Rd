@@ -4,9 +4,11 @@
 \alias{create_output}
 \title{Title}
 \usage{
-create_output(output_name, render_func, output_func, args)
+create_output(app_type, output_name, render_func, output_func, args)
 }
 \arguments{
+\item{app_type}{Character}
+
 \item{output_name}{Character}
 
 \item{render_func}{Function}

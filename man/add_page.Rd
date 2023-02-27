@@ -5,6 +5,7 @@
 \title{Title}
 \usage{
 add_page(
+  app_type,
   page_name,
   page_menu_name = page_name,
   visibility = "hidden",
@@ -14,6 +15,8 @@ add_page(
 )
 }
 \arguments{
+\item{app_type}{Character}
+
 \item{page_name}{Character}
 
 \item{page_menu_name}{Character}

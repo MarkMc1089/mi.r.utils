@@ -12,10 +12,11 @@
 #'
 #' }
 # Begin Exclude Linting
-dateRangeMonthsInput <- function(inputId, label = NULL, start = NULL, end = NULL, min = NULL, max = NULL,
-                                 format = "yyyy-mm-dd", startview = "month", minviewmode = "months",
-                                 weekstart = 0, language = "en", separator = " to ", width = NULL,
-                                 init_hide = FALSE, autoclose = TRUE) {
+dateRangeMonthsInput <- function(inputId, label = NULL, start = NULL, end = NULL,
+                                 min = NULL, max = NULL, format = "yyyy-mm-dd",
+                                 startview = "month", minviewmode = "months",
+                                 weekstart = 0, language = "en", separator = " to ",
+                                 width = NULL, init_hide = FALSE, autoclose = TRUE) {
   # End Exclude Linting
   # If start and end are date objects, convert to a string with yyyy-mm-dd format
   # Same for min and max
@@ -467,6 +468,28 @@ user_group_select <- function(id) {
 }
 
 
+#' Create Shiny input for selecting from multiple similar aspects in stacked
+#' vertical charts
+#'
+#' @param id Character
+#' @param choices Vector of characters
+#'
+#' @return HTML
+#' @export
+#'
+#' @examples \dontrun{
+#'
+#' }
+aspect_radio_select <- function(id, choices) {
+  radioButtons(
+    id,
+    "Aspect",
+    choices = choices,
+    inline = TRUE
+  )
+}
+
+
 #' Create info tooltip to be used with tippy.js
 #'
 #' @param content HTML elements
@@ -479,8 +502,13 @@ user_group_select <- function(id) {
 #'
 #' }
 info_tooltip <- function(content,
-                         style = glue("display: inline; padding-left: 1px; font-size: \\
-                                      1 rem; font-weight: 400")) {
+                         style = NULL) {
+  if (is.null(style)) {
+    style <- glue(
+      "display: inline; padding-left: 1px; font-size: 1 rem; font-weight: 400"
+    )
+  }
+
   span(
     class = "info-tippy",
     style = style,

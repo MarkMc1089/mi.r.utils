@@ -4,9 +4,11 @@
 \alias{add_output}
 \title{Title}
 \usage{
-add_output(page, output_name, render_func, output_func, args)
+add_output(app_type, page, output_name, render_func, output_func, args)
 }
 \arguments{
+\item{app_type}{Character}
+
 \item{page}{Filepath}
 
 \item{output_name}{Character}
