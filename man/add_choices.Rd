@@ -4,7 +4,13 @@
 \alias{add_choices}
 \title{Title}
 \usage{
-add_choices(choices_meta, backup_dir = NULL, overwrite = FALSE, open = FALSE)
+add_choices(
+  choices_meta,
+  backup_dir = NULL,
+  overwrite = FALSE,
+  append = FALSE,
+  open = FALSE
+)
 }
 \arguments{
 \item{choices_meta}{Data}
@@ -12,6 +18,8 @@ add_choices(choices_meta, backup_dir = NULL, overwrite = FALSE, open = FALSE)
 \item{backup_dir}{Filepath}
 
 \item{overwrite}{Boolean}
+
+\item{append}{Boolean}
 
 \item{open}{Boolean}
 }

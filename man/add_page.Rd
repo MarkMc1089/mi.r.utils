@@ -8,7 +8,6 @@ add_page(
   app_type,
   page_name,
   page_menu_name = page_name,
-  visibility = "hidden",
   backup_dirs = NULL,
   overwrite = FALSE,
   open = FALSE
@@ -20,8 +19,6 @@ add_page(
 \item{page_name}{Character}
 
 \item{page_menu_name}{Character}
-
-\item{visibility}{"hidden" if not first page, "visible" for first page}
 
 \item{backup_dirs}{Vector of filepaths}
 

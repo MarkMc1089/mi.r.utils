@@ -204,7 +204,6 @@ file_remove_line <- function(.file, .match = NA, open = FALSE) {
 #' @param app_type Character
 #' @param page_name Character
 #' @param page_menu_name Character
-#' @param visibility "hidden" if not first page, "visible" for first page
 #' @param backup_dirs Vector of filepaths
 #' @param overwrite Boolean
 #' @param open Boolean
@@ -216,8 +215,7 @@ file_remove_line <- function(.file, .match = NA, open = FALSE) {
 #'
 #' }
 add_page <- function(app_type, page_name, page_menu_name = page_name,
-                     visibility = "hidden", backup_dirs = NULL,
-                     overwrite = FALSE, open = FALSE) {
+                     backup_dirs = NULL, overwrite = FALSE, open = FALSE) {
   page_file_name <- to_snake_case(page_name)
   page_dir <- dir_create(file.path("ui", "pages"))
   page_r <- glue("{page_dir}/{page_file_name}.R")
@@ -227,6 +225,20 @@ add_page <- function(app_type, page_name, page_menu_name = page_name,
   check_overwrite(
     c(page_r, server_r), backup_dirs, overwrite
   )
+
+  app_r <- "app.R"
+  ui_r <- "ui/ui.R"
+
+  app_lines <- readLines(app_r)
+  ui_lines <- readLines(ui_r)
+
+  not_first_page <- startsWith(
+    app_lines[[match("  ### Page outputs above", app_lines) - 1]],
+    "  source"
+  )
+
+  visibility <- "visible"
+  if (not_first_page) visibility <- "hidden"
 
   page_r_temp <- readLines(
     system.file(
@@ -242,12 +254,6 @@ add_page <- function(app_type, page_name, page_menu_name = page_name,
 
   file.create(server_r)
   if (open) navigateToFile(server_r)
-
-  app_r <- "app.R"
-  ui_r <- "ui/ui.R"
-
-  app_lines <- readLines(app_r)
-  ui_lines <- readLines(ui_r)
 
   target <- glue('  source("./server/{page_file_name}_outputs.R", local = TRUE)')
   if (is.na(match(target, app_lines))) {
@@ -290,19 +296,11 @@ add_page <- function(app_type, page_name, page_menu_name = page_name,
 #' }
 add_pages <- function(app_type, pages, page_menu_names = pages,
                       backup_dirs = NULL, overwrite = FALSE, open = FALSE) {
-  add_page(
-    app_type,
-    pages[1],
-    page_menu_names[1],
-    visibility = "visible",
-    backup_dirs = backup_dirs, overwrite = overwrite, open = open
-  )
   walk2(
-    pages[-1],
-    page_menu_names[-1],
+    pages,
+    page_menu_names,
     add_page,
     app_type = app_type,
-    visibility = "hidden",
     backup_dirs = backup_dirs, overwrite = overwrite, open = open
   )
 }
@@ -728,6 +726,7 @@ create_levels <- function(data, levels_meta) {
 #' @param levels_meta Data
 #' @param backup_dir Filepath
 #' @param overwrite Boolean
+#' @param append Boolean
 #' @param open Boolean
 #'
 #' @return Used for side effects
@@ -737,20 +736,31 @@ create_levels <- function(data, levels_meta) {
 #'
 #' }
 add_levels <- function(app_type, data, levels_meta, backup_dir = NULL,
-                       overwrite = FALSE, open = FALSE) {
+                       overwrite = FALSE, append = FALSE, open = FALSE) {
   levels <- create_levels(data, levels_meta)
 
   global_dir <- dir_create("global")
   levels_r <- glue("global/levels.R")
 
-  check_overwrite(levels_r, backup_dir, overwrite)
+  if (!append) check_overwrite(levels_r, backup_dir, overwrite)
 
-  levels_r_temp <- readLines(
-    system.file(
-      app_type, "templates", "global", "levels_template.txt",
-      package = "projecthooks"
+  if (append) {
+    levels_r_temp <- c(
+      readLines(levels_r),
+      "",
+      "{levels}"
     )
-  )
+
+    warning("Appending to existing file: levels.R", call. = FALSE)
+  } else {
+    levels_r_temp <- readLines(
+      system.file(
+        app_type, "templates", "global", "levels_template.txt",
+        package = "projecthooks"
+      )
+    )
+  }
+
   levels_r_temp <- glue(glue_collapse(levels_r_temp, sep = "\n"))
 
   file.create(levels_r)
@@ -790,6 +800,7 @@ create_choices <- function(choices_meta) {
 #' @param choices_meta Data
 #' @param backup_dir Filepath
 #' @param overwrite Boolean
+#' @param append Boolean
 #' @param open Boolean
 #'
 #' @return Used for side effects
@@ -799,12 +810,26 @@ create_choices <- function(choices_meta) {
 #'
 #' }
 add_choices <- function(choices_meta, backup_dir = NULL,
-                        overwrite = FALSE, open = FALSE) {
+                        overwrite = FALSE, append = FALSE, open = FALSE) {
   choices <- create_choices(choices_meta)
 
   choices_r <- glue("global/choices.R")
 
-  check_overwrite(choices_r, backup_dir, overwrite)
+  if (!append) check_overwrite(choices_r, backup_dir, overwrite)
+
+  if (append) {
+    choices_r_temp <- c(
+      readLines(choices_r),
+      "",
+      "{choices}"
+    )
+
+    warning("Appending to existing file: choices.R", call. = FALSE)
+
+    choices_r_temp <- glue(glue_collapse(choices_r_temp, sep = "\n"))
+  } else {
+    choices_r_temp <- choices
+  }
 
   warning(
     glue("Choices created will have human unfriendly names. Please edit before using."),
@@ -812,6 +837,6 @@ add_choices <- function(choices_meta, backup_dir = NULL,
   )
 
   file.create(choices_r)
-  writeLines(choices, choices_r)
+  writeLines(choices_r_temp, choices_r)
   if (open) navigateToFile(choices_r)
 }

@@ -10,6 +10,7 @@ add_levels(
   levels_meta,
   backup_dir = NULL,
   overwrite = FALSE,
+  append = FALSE,
   open = FALSE
 )
 }
@@ -23,6 +24,8 @@ add_levels(
 \item{backup_dir}{Filepath}
 
 \item{overwrite}{Boolean}
+
+\item{append}{Boolean}
 
 \item{open}{Boolean}
 }
