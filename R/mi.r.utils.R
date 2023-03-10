@@ -14,7 +14,8 @@
 #' @importFrom shinyBS bsCollapse
 #' @importFrom dplyr mutate filter left_join case_when group_by count ungroup distinct
 #' @importFrom dplyr full_join arrange summarise all_of bind_rows n between desc
-#' @importFrom dplyr select across if_else starts_with pull add_count lag
+#' @importFrom dplyr select across if_else starts_with ends_with pull add_count lag
+#' @importFrom dplyr rename_with
 #' @importFrom highcharter highchart hc_add_series hc_xAxis hc_tooltip hc_plotOptions
 #' @importFrom highcharter hc_yAxis hc_title hc_subtitle hc_legend hc_colors hcaes
 #' @importFrom lubridate %m+% %m-% now years

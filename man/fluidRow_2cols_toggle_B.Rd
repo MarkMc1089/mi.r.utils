@@ -4,12 +4,14 @@
 \alias{fluidRow_2cols_toggle_B}
 \title{Create Shiny output widgets in 2 columns, with 2nd column initially hidden.}
 \usage{
-fluidRow_2cols_toggle_B(output_fun, output_name)
+fluidRow_2cols_toggle_B(output_fun, output_name, ...)
 }
 \arguments{
 \item{output_fun}{Function}
 
 \item{output_name}{Character}
+
+\item{...}{Additional args passed to output_fun}
 }
 \value{
 HTML

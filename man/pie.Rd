@@ -8,10 +8,10 @@ questions with 3 or less possible responses only.}
 pie(
   data,
   question_column,
-  responses,
   colours = NULL,
   chart_title = NULL,
-  low_base = 100
+  low_base = 100,
+  responses
 )
 }
 \arguments{
@@ -19,13 +19,13 @@ pie(
 
 \item{question_column}{Character}
 
-\item{responses}{Variable}
-
 \item{colours}{Vector of characters}
 
 \item{chart_title}{Character}
 
 \item{low_base}{Int}
+
+\item{responses}{Variable}
 }
 \value{
 Highcharts object

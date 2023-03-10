@@ -7,20 +7,24 @@
 stacked_vertical(
   data,
   columns,
+  month_col,
+  radio_select = NULL,
   cols_start_with = TRUE,
   responses,
   colours = NULL,
   legend_title = element_blank(),
   low_base = 100,
-  radio_select = NULL,
-  show_mean = FALSE,
-  month_col
+  show_mean = FALSE
 )
 }
 \arguments{
 \item{data}{Data}
 
 \item{columns}{Vector of characters}
+
+\item{month_col}{Character}
+
+\item{radio_select}{Character}
 
 \item{cols_start_with}{Boolean}
 
@@ -32,11 +36,7 @@ stacked_vertical(
 
 \item{low_base}{Int}
 
-\item{radio_select}{Character}
-
 \item{show_mean}{Boolean}
-
-\item{month_col}{Character}
 }
 \value{
 Plotly object
