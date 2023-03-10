@@ -8,13 +8,13 @@ feature. Use for non-rating style questions with more than 3 responses only.}
 horizontal_bar(
   data,
   columns,
+  month_col,
   cols_start_with = FALSE,
+  arrange_desc = TRUE,
   responses,
   colour = "#005EB8",
   chart_title = NULL,
-  arrange_desc = TRUE,
-  low_base = 100,
-  month_col
+  low_base = 100
 )
 }
 \arguments{
@@ -22,7 +22,11 @@ horizontal_bar(
 
 \item{columns}{Vector of characters}
 
+\item{month_col}{Character}
+
 \item{cols_start_with}{Boolean}
+
+\item{arrange_desc}{Boolean}
 
 \item{responses}{Variable}
 
@@ -30,11 +34,7 @@ horizontal_bar(
 
 \item{chart_title}{Character}
 
-\item{arrange_desc}{Boolean}
-
 \item{low_base}{Int}
-
-\item{month_col}{Character}
 }
 \value{
 Highcharts object

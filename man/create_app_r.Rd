@@ -7,6 +7,9 @@
 create_app_r(
   app_type,
   app_title,
+  data_prefix,
+  month_col,
+  region_col,
   backup_dir = NULL,
   overwrite = FALSE,
   open = FALSE
@@ -16,6 +19,12 @@ create_app_r(
 \item{app_type}{Character}
 
 \item{app_title}{Character}
+
+\item{data_prefix}{Character}
+
+\item{month_col}{Character}
+
+\item{region_col}{Character}
 
 \item{backup_dir}{Filepath}
 

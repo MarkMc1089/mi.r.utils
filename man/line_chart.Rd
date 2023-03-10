@@ -8,14 +8,15 @@ average); measure should be either "NPS" or "NES"}
 line_chart(
   data,
   measure_column,
+  month_col,
+  three_month_rolling = FALSE,
+  last_valid_month_range_selection,
+  data_prefix = NULL,
   measure_aux = NULL,
   targets = NULL,
-  three_month_rolling = FALSE,
   low_base = 100,
   title = NULL,
-  subtitle = NULL,
-  month_col,
-  last_valid_month_range_selection
+  subtitle = NULL
 )
 }
 \arguments{
@@ -23,21 +24,23 @@ line_chart(
 
 \item{measure_column}{Character}
 
+\item{month_col}{Character}
+
+\item{three_month_rolling}{Boolean}
+
+\item{last_valid_month_range_selection}{List of dates}
+
+\item{data_prefix}{Character}
+
 \item{measure_aux}{Data}
 
 \item{targets}{Data}
-
-\item{three_month_rolling}{Boolean}
 
 \item{low_base}{Int}
 
 \item{title}{Character}
 
 \item{subtitle}{Character}
-
-\item{month_col}{Character}
-
-\item{last_valid_month_range_selection}{List of dates}
 }
 \value{
 Highcharts object

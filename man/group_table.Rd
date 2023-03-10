@@ -8,9 +8,10 @@ interest and the associated selectInput id to use for NPS grouping as strings.}
 group_table(
   data,
   comment_column,
+  month_col,
   group_select = NULL,
   comment_name_in_DT = "Reasons",
-  month_col
+  data_prefix = NULL
 )
 }
 \arguments{
@@ -18,11 +19,13 @@ group_table(
 
 \item{comment_column}{Character}
 
+\item{month_col}{Character}
+
 \item{group_select}{Character or NULL}
 
 \item{comment_name_in_DT}{Character}
 
-\item{month_col}{Character}
+\item{data_prefix}{Character}
 }
 \value{
 Datatable

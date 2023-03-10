@@ -9,12 +9,12 @@ month in the selected range.}
 stacked_horizontal(
   data,
   question_column,
-  responses,
-  colours,
-  legend_names,
-  low_base = 100,
   month_col,
-  last_valid_month_range_selection
+  colours,
+  last_valid_month_range_selection,
+  responses,
+  legend_names,
+  low_base = 100
 )
 }
 \arguments{
@@ -22,17 +22,17 @@ stacked_horizontal(
 
 \item{question_column}{Character}
 
-\item{responses}{Variable}
+\item{month_col}{Character}
 
 \item{colours}{Vector of characters}
+
+\item{last_valid_month_range_selection}{List of dates}
+
+\item{responses}{Variable}
 
 \item{legend_names}{Variable}
 
 \item{low_base}{Int}
-
-\item{month_col}{Character}
-
-\item{last_valid_month_range_selection}{List of dates}
 }
 \value{
 Highcharts object

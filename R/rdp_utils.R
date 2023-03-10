@@ -36,7 +36,46 @@ check_overwrite <- function(files, backup_dirs, overwrite) {
 #' Title
 #'
 #' @param app_type Character
+#' @param data_prefix Character
+#' @param month_col Character
+#' @param region_col Vector of filepaths
+#'
+#' @return Used for side effects
+#' @export
+#'
+#' @examples \dontrun{
+#'
+#' }
+add_reactive_data <- function(app_type, data_prefix, month_col, region_col) {
+  app_r <- "app.R"
+  app_lines <- readLines(app_r)
+
+  reactive_data_temp <- readLines(
+    system.file(
+      "projects", app_type, "templates", "reactive_data_template.txt",
+      package = "projecthooks"
+    )
+  )
+  reactive_data_temp <- c(reactive_data_temp, "", "")
+  reactive_data_temp <- glue(
+    glue_collapse(reactive_data_temp, sep = "\n"),
+    .trim = FALSE
+  )
+
+  target <- glue("  filtered_{data_prefix}_data <- reactiveValues(")
+  if (is.na(match(target, app_lines))) {
+    file_insert_lines(app_r, reactive_data_temp, "  ### Reactive data above")
+  }
+}
+
+
+#' Title
+#'
+#' @param app_type Character
 #' @param app_title Character
+#' @param data_prefix Character
+#' @param month_col Character
+#' @param region_col Character
 #' @param backup_dir Filepath
 #' @param overwrite Boolean
 #' @param open Boolean
@@ -47,20 +86,22 @@ check_overwrite <- function(files, backup_dirs, overwrite) {
 #' @examples \dontrun{
 #'
 #' }
-create_app_r <- function(app_type, app_title, backup_dir = NULL,
-                         overwrite = FALSE, open = FALSE) {
+create_app_r <- function(app_type, app_title, data_prefix, month_col, region_col,
+                         backup_dir = NULL, overwrite = FALSE, open = FALSE) {
   app_r <- "app.R"
   check_overwrite(app_r, backup_dir, overwrite)
 
-  app_r_lines <- readLines(
+  app_r_temp <- readLines(
     system.file(
-      app_type, "templates", "app_template.txt",
+      "projects", app_type, "templates", "app_template.txt",
       package = "projecthooks"
     )
   )
-  app_r_lines <- glue(glue_collapse(app_r_lines, sep = "\n"), .trim = FALSE)
+  app_r_temp <- glue(glue_collapse(app_r_temp, sep = "\n"), .trim = FALSE)
 
-  writeLines(app_r_lines, app_r)
+  writeLines(app_r_temp, app_r)
+
+  add_reactive_data(app_type, data_prefix, month_col, region_col)
 
   if (open) navigateToFile(app_r)
 }
@@ -69,6 +110,9 @@ create_app_r <- function(app_type, app_title, backup_dir = NULL,
 #' Title
 #'
 #' @param app_type Character
+#' @param data_prefix Character
+#' @param month_col Character
+#' @param region_col Character
 #' @param main_title Character
 #' @param subtitle Character
 #' @param backup_dir Filepath
@@ -81,22 +125,23 @@ create_app_r <- function(app_type, app_title, backup_dir = NULL,
 #' @examples \dontrun{
 #'
 #' }
-create_ui_r <- function(app_type, main_title, subtitle, backup_dir = NULL,
+create_ui_r <- function(app_type, data_prefix, month_col, region_col,
+                        main_title, subtitle, backup_dir = NULL,
                         overwrite = FALSE, open = FALSE) {
   ui_dir <- dir_create("ui")
   ui_r <- "ui/ui.R"
 
   check_overwrite(ui_r, backup_dir, overwrite)
 
-  ui_r_lines <- readLines(
+  ui_r_temp <- readLines(
     system.file(
-      app_type, "templates", "ui", "ui_template.txt",
+      "projects", app_type, "templates", "ui", "ui_template.txt",
       package = "projecthooks"
     )
   )
-  ui_r_lines <- glue(glue_collapse(ui_r_lines, sep = "\n"), .trim = FALSE)
+  ui_r_temp <- glue(glue_collapse(ui_r_temp, sep = "\n"), .trim = FALSE)
 
-  writeLines(ui_r_lines, ui_r)
+  writeLines(ui_r_temp, ui_r)
 
   if (open) navigateToFile(ui_r)
 }
@@ -242,7 +287,7 @@ add_page <- function(app_type, page_name, page_menu_name = page_name,
 
   page_r_temp <- readLines(
     system.file(
-      app_type, "templates", "ui", "ui_page_template.txt",
+      "projects", app_type, "templates", "ui", "ui_page_template.txt",
       package = "projecthooks"
     )
   )
@@ -447,7 +492,7 @@ create_output <- function(app_type, output_name, render_func, output_func, args)
 
   output_temp <- readLines(
     system.file(
-      app_type, "templates", "server", "output_template.txt",
+      "projects", app_type, "templates", "server", "output_template.txt",
       package = "projecthooks"
     )
   )
@@ -504,7 +549,7 @@ add_ui_element <- function(app_type, page, label, output_name, ui_func, section_
   if (use_comment_group) {
     element_temp <- readLines(
       system.file(
-        app_type, "templates", "ui", "ui_comment_group_template.txt",
+        "projects", app_type, "templates", "ui", "ui_comment_group_template.txt",
         package = "projecthooks"
       )
     )
@@ -512,7 +557,8 @@ add_ui_element <- function(app_type, page, label, output_name, ui_func, section_
   } else if (use_aspect_radio) {
     element_temp <- readLines(
       system.file(
-        app_type, "templates", "ui", "ui_stacked_vertical_radio_template.txt",
+        "projects", app_type, "templates", "ui",
+        "ui_stacked_vertical_radio_template.txt",
         package = "projecthooks"
       )
     )
@@ -521,7 +567,7 @@ add_ui_element <- function(app_type, page, label, output_name, ui_func, section_
   } else {
     element_temp <- readLines(
       system.file(
-        app_type, "templates", "ui", "ui_element_template.txt",
+        "projects", app_type, "templates", "ui", "ui_element_template.txt",
         package = "projecthooks"
       )
     )
@@ -573,7 +619,7 @@ add_ui <- function(app_type, page, section, label, output_name, ui_func, section
     # section does not exist, so add
     section_temp <- readLines(
       system.file(
-        app_type, "templates", "ui", "ui_section_template.txt",
+        "projects", app_type, "templates", "ui", "ui_section_template.txt",
         package = "projecthooks"
       )
     )
@@ -664,7 +710,7 @@ create_levels <- function(data, levels_meta) {
   single_col_level_names <- setdiff(level_names$output_name, multi_col_level_names)
 
   levels <- lapply(data, unique) %>%
-    lapply(setdiff, "")
+    lapply(setdiff, c("", "Undisclosed"))
 
   levels <- map(levels, ~ paste0("  \"", .x, "\"", " = \"", .x, "\""))
   levels <- imap(
@@ -722,6 +768,7 @@ create_levels <- function(data, levels_meta) {
 #' Title
 #'
 #' @param app_type Character
+#' @param data_prefix Character
 #' @param data Data
 #' @param levels_meta Data
 #' @param backup_dir Filepath
@@ -735,12 +782,21 @@ create_levels <- function(data, levels_meta) {
 #' @examples \dontrun{
 #'
 #' }
-add_levels <- function(app_type, data, levels_meta, backup_dir = NULL,
+add_levels <- function(app_type, data_prefix, data, levels_meta, backup_dir = NULL,
                        overwrite = FALSE, append = FALSE, open = FALSE) {
   levels <- create_levels(data, levels_meta)
 
   global_dir <- dir_create("global")
-  levels_r <- glue("global/levels.R")
+  levels_r <- "global/levels.R"
+
+  levels_r_temp <- readLines(
+    system.file(
+      "projects", app_type, "templates", "global", "levels_template.txt",
+      package = "projecthooks"
+    )
+  )
+
+  levels_r_temp <- glue(glue_collapse(levels_r_temp, sep = "\n"))
 
   if (!append) check_overwrite(levels_r, backup_dir, overwrite)
 
@@ -748,20 +804,24 @@ add_levels <- function(app_type, data, levels_meta, backup_dir = NULL,
     levels_r_temp <- c(
       readLines(levels_r),
       "",
-      "{levels}"
+      levels_r_temp
     )
 
     warning("Appending to existing file: levels.R", call. = FALSE)
   } else {
-    levels_r_temp <- readLines(
+    standard_levels_r_temp <- readLines(
       system.file(
-        app_type, "templates", "global", "levels_template.txt",
+        "projects", app_type, "templates", "global", "standard_levels.txt",
         package = "projecthooks"
       )
     )
-  }
 
-  levels_r_temp <- glue(glue_collapse(levels_r_temp, sep = "\n"))
+    levels_r_temp <- c(
+      standard_levels_r_temp,
+      "",
+      levels_r_temp
+    )
+  }
 
   file.create(levels_r)
   writeLines(levels_r_temp, levels_r)
@@ -813,7 +873,8 @@ add_choices <- function(choices_meta, backup_dir = NULL,
                         overwrite = FALSE, append = FALSE, open = FALSE) {
   choices <- create_choices(choices_meta)
 
-  choices_r <- glue("global/choices.R")
+  global_dir <- dir_create("global")
+  choices_r <- "global/choices.R"
 
   if (!append) check_overwrite(choices_r, backup_dir, overwrite)
 
@@ -821,12 +882,10 @@ add_choices <- function(choices_meta, backup_dir = NULL,
     choices_r_temp <- c(
       readLines(choices_r),
       "",
-      "{choices}"
+      choices
     )
 
     warning("Appending to existing file: choices.R", call. = FALSE)
-
-    choices_r_temp <- glue(glue_collapse(choices_r_temp, sep = "\n"))
   } else {
     choices_r_temp <- choices
   }
@@ -839,4 +898,79 @@ add_choices <- function(choices_meta, backup_dir = NULL,
   file.create(choices_r)
   writeLines(choices_r_temp, choices_r)
   if (open) navigateToFile(choices_r)
+}
+
+
+#' Title
+#'
+#' @param app_type Character
+#' @param data_prefix Character
+#' @param page_1 Character
+#' @param survey_doc Character
+#' @param backup_dir Filepath
+#' @param overwrite Boolean
+#' @param open Boolean
+#'
+#' @return Used for side effects
+#' @export
+#'
+#' @examples \dontrun{
+#'
+#' }
+create_ui_outputs_r <- function(app_type, data_prefix, page_1, survey_doc,
+                                backup_dir = NULL, overwrite = FALSE, open = FALSE) {
+  server_dir <- dir_create("server")
+  ui_outputs_r <- "server/ui_outputs.R"
+
+  check_overwrite(ui_outputs_r, backup_dir, overwrite)
+
+  ui_outputs_r_temp <- readLines(
+    system.file(
+      "projects", app_type, "templates", "server", "ui_outputs.txt",
+      package = "projecthooks"
+    )
+  )
+  ui_outputs_r_temp <- glue(glue_collapse(ui_outputs_r_temp, sep = "\n"), .trim = FALSE)
+
+  writeLines(ui_outputs_r_temp, ui_outputs_r)
+
+  if (nchar(survey_doc) > 0) add_survey_doc_output(app_type, data_prefix, survey_doc)
+
+  if (open) navigateToFile(ui_outputs_r)
+}
+
+#' Title
+#'
+#' @param app_type Character
+#' @param data_prefix Character
+#' @param survey_doc Character
+#'
+#' @return Used for side effects
+#' @export
+#'
+#' @examples \dontrun{
+#'
+#' }
+add_survey_doc_output <- function(app_type, data_prefix, survey_doc) {
+  survey_doc_r_temp <- readLines(
+    system.file(
+      "projects", app_type, "templates", "server", "survey_download_output_template.txt",
+      package = "projecthooks"
+    )
+  )
+  survey_doc_r_temp <- c(survey_doc_r_temp, "")
+  survey_doc_r_temp <- glue(
+    glue_collapse(survey_doc_r_temp, sep = "\n"),
+    .trim = FALSE
+  )
+
+  ui_outputs_r <- "server/ui_outputs.R"
+  ui_outputs_r_lines <- readLines(ui_outputs_r)
+
+  target <- glue("output${data_prefix}_survey_download <- downloadHandler(")
+  if (is.na(match(target, ui_outputs_r_lines))) {
+    file_insert_lines(
+      ui_outputs_r, survey_doc_r_temp, "### Survey download output above"
+    )
+  }
 }
