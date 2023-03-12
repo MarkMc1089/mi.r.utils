@@ -750,30 +750,3 @@ suppress_warnings <- function(.expr, .f, ...) {
     })
   ))
 }
-
-
-#' Selectively suppress errors using a given function to check for content in
-#' error messages, or a character string to look for in the error message
-#'
-#' @param .expr Code
-#' @param .f Function or character string
-#' @param ... Vector of characters
-#'
-#' @return Used for side effects
-#' @export
-#'
-#' @examples \dontrun{
-#'
-#' }
-suppress_errors <- function(.expr, .f, ...) {
-  eval.parent(substitute(
-    withCallingHandlers(.expr, error = function(w) {
-      cm <- conditionMessage(w)
-      cond <-
-        if (is.character(.f)) grepl(.f, cm) else as_function(.f)(cm, ...)
-      if (cond) {
-        invokeRestart("abort")
-      }
-    })
-  ))
-}
