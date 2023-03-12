@@ -726,10 +726,10 @@ a11yBsCollapse <- function(id, open, ...) { # Exclude Linting
 
 
 #' Selectively suppress warnings using a given function to check for content in
-#' warning messages
+#' warning messages, or a character string to look for in the warning message
 #'
 #' @param .expr Code
-#' @param .f Function
+#' @param .f Function or character string
 #' @param ... Vector of characters
 #'
 #' @return Used for side effects
@@ -746,6 +746,33 @@ suppress_warnings <- function(.expr, .f, ...) {
         if (is.character(.f)) grepl(.f, cm) else as_function(.f)(cm, ...)
       if (cond) {
         invokeRestart("muffleWarning")
+      }
+    })
+  ))
+}
+
+
+#' Selectively suppress errors using a given function to check for content in
+#' error messages, or a character string to look for in the error message
+#'
+#' @param .expr Code
+#' @param .f Function or character string
+#' @param ... Vector of characters
+#'
+#' @return Used for side effects
+#' @export
+#'
+#' @examples \dontrun{
+#'
+#' }
+suppress_errors <- function(.expr, .f, ...) {
+  eval.parent(substitute(
+    withCallingHandlers(.expr, error = function(w) {
+      cm <- conditionMessage(w)
+      cond <-
+        if (is.character(.f)) grepl(.f, cm) else as_function(.f)(cm, ...)
+      if (cond) {
+        invokeRestart("abort")
       }
     })
   ))

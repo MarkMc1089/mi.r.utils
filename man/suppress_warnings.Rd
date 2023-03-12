@@ -3,14 +3,14 @@
 \name{suppress_warnings}
 \alias{suppress_warnings}
 \title{Selectively suppress warnings using a given function to check for content in
-warning messages}
+warning messages, or a character string to look for in the warning message}
 \usage{
 suppress_warnings(.expr, .f, ...)
 }
 \arguments{
 \item{.expr}{Code}
 
-\item{.f}{Function}
+\item{.f}{Function or character string}
 
 \item{...}{Vector of characters}
 }
@@ -19,7 +19,7 @@ Used for side effects
 }
 \description{
 Selectively suppress warnings using a given function to check for content in
-warning messages
+warning messages, or a character string to look for in the warning message
 }
 \examples{
 \dontrun{
