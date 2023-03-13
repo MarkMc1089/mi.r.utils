@@ -11,7 +11,8 @@ pie(
   colours = NULL,
   chart_title = NULL,
   low_base = 100,
-  responses
+  responses,
+  keep_undisclosed = FALSE
 )
 }
 \arguments{
@@ -26,6 +27,8 @@ pie(
 \item{low_base}{Int}
 
 \item{responses}{Variable}
+
+\item{keep_undisclosed}{Boolean}
 }
 \value{
 Highcharts object

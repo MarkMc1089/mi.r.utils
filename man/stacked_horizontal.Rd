@@ -13,6 +13,7 @@ stacked_horizontal(
   colours,
   last_valid_month_range_selection,
   responses,
+  keep_undisclosed = FALSE,
   legend_names,
   low_base = 100
 )
@@ -29,6 +30,8 @@ stacked_horizontal(
 \item{last_valid_month_range_selection}{List of dates}
 
 \item{responses}{Variable}
+
+\item{keep_undisclosed}{Boolean}
 
 \item{legend_names}{Variable}
 

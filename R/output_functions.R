@@ -266,9 +266,9 @@ line_chart <- function(data, measure_column, month_col, three_month_rolling = FA
           ) %>%
           mutate(
             group = case_when(
-              !!sym(measure_column) %in% c(c(1:6), nes_responses[1:2]) ~ "Promoter",
+              !!sym(measure_column) %in% c(c(9:10), nes_responses[1:2]) ~ "Promoter",
               !!sym(measure_column) %in% c(c(7:8), nes_responses[3:4]) ~ "Passive",
-              !!sym(measure_column) %in% c(c(9:10), nes_responses[5:7]) ~ "Detractor"
+              !!sym(measure_column) %in% c((1:6), nes_responses[5:7]) ~ "Detractor"
             )
           ) %>%
           group_by(
@@ -896,12 +896,13 @@ group_table <- function(data, comment_column, month_col, group_select = NULL,
 #' @param data Data
 #' @param columns Vector of characters
 #' @param month_col Character
+#' @param radio_select Character
 #' @param cols_start_with Boolean
 #' @param responses Variable
+#' @param keep_undisclosed Boolean
 #' @param colours Vector of characters
 #' @param legend_title Character
 #' @param low_base Int
-#' @param radio_select Character
 #' @param show_mean Boolean
 #'
 #' @return Plotly object
@@ -911,7 +912,8 @@ group_table <- function(data, comment_column, month_col, group_select = NULL,
 #'
 #' }
 stacked_vertical <- function(data, columns, month_col, radio_select = NULL,
-                             cols_start_with = TRUE, responses, colours = NULL,
+                             cols_start_with = TRUE, responses,
+                             keep_undisclosed = FALSE, colours = NULL,
                              legend_title = element_blank(), low_base = 100,
                              show_mean = FALSE) {
   validate(need(nrow(data) > 0, "No data for current filter selection!"))
@@ -924,6 +926,9 @@ stacked_vertical <- function(data, columns, month_col, radio_select = NULL,
     if (cols_start_with) columns <- names(data %>% select(starts_with(columns)))
   }
 
+  filter_out <- c("", "Undisclosed")
+  if (keep_undisclosed) filter_out <- c("")
+
   options <- data %>%
     select(
       !!month_col,
@@ -934,7 +939,7 @@ stacked_vertical <- function(data, columns, month_col, radio_select = NULL,
       names_to = "question_column",
       values_drop_na = TRUE
     ) %>%
-    filter(!.data$value %in% c("", "Undisclosed")) %>%
+    filter(!.data$value %in% filter_out) %>%
     mutate(
       question_column = case_when(
         length(unique(.data$question_column)) == 1 ~ .data$value,
@@ -1083,6 +1088,7 @@ stacked_vertical <- function(data, columns, month_col, radio_select = NULL,
 #' @param colours Vector of characters
 #' @param last_valid_month_range_selection List of dates
 #' @param responses Variable
+#' @param keep_undisclosed Boolean
 #' @param legend_names Variable
 #' @param low_base Int
 #'
@@ -1094,8 +1100,12 @@ stacked_vertical <- function(data, columns, month_col, radio_select = NULL,
 #' }
 stacked_horizontal <- function(data, question_column, month_col, colours,
                                last_valid_month_range_selection, # Exclude Linting
-                               responses, legend_names, low_base = 100) {
+                               responses, keep_undisclosed = FALSE, legend_names,
+                               low_base = 100) {
   validate(need(nrow(data) > 0, "No data for current filter selection!"))
+
+  filter_out <- c("", "Undisclosed")
+  if (keep_undisclosed) filter_out <- c("")
 
   question <- data %>%
     select(
@@ -1103,7 +1113,7 @@ stacked_horizontal <- function(data, question_column, month_col, colours,
       !!question_column
     ) %>%
     na.omit() %>%
-    filter(!(!!sym(question_column) %in% c("", "Undisclosed")))
+    filter(!(!!sym(question_column) %in% filter_out))
 
   question <- question %>%
     group_by(
@@ -1330,6 +1340,7 @@ stacked_horizontal <- function(data, question_column, month_col, colours,
 #' @param chart_title Character
 #' @param low_base Int
 #' @param responses Variable
+#' @param keep_undisclosed Boolean
 #'
 #' @return Highcharts object
 #' @export
@@ -1337,9 +1348,12 @@ stacked_horizontal <- function(data, question_column, month_col, colours,
 #' @examples \dontrun{
 #'
 #' }
-pie <- function(data, question_column, colours = NULL,
-                chart_title = NULL, low_base = 100, responses) {
+pie <- function(data, question_column, colours = NULL, chart_title = NULL,
+                low_base = 100, responses, keep_undisclosed = FALSE) {
   validate(need(nrow(data) > 0, "No data for current filter selection!"))
+
+  filter_out <- c("", "Undisclosed")
+  if (keep_undisclosed) filter_out <- c("")
 
   chart <- data %>%
     select(
@@ -1347,7 +1361,7 @@ pie <- function(data, question_column, colours = NULL,
     ) %>%
     na.omit() %>%
     filter(
-      !(!!sym(question_column) %in% c("", "Undisclosed"))
+      !(!!sym(question_column) %in% filter_out)
     )
 
   if (is.null(colours)) {
@@ -1451,6 +1465,7 @@ pie <- function(data, question_column, colours = NULL,
 #' @param cols_start_with Boolean
 #' @param arrange_desc Boolean
 #' @param responses Variable
+#' @param keep_undisclosed Boolean
 #' @param colour Character
 #' @param chart_title Character
 #' @param low_base Int
@@ -1462,12 +1477,15 @@ pie <- function(data, question_column, colours = NULL,
 #'
 #' }
 horizontal_bar <- function(data, columns, month_col, cols_start_with = FALSE,
-                           arrange_desc = TRUE, responses, colour = "#005EB8",
-                           chart_title = NULL, low_base = 100) {
+                           arrange_desc = TRUE, responses, keep_undisclosed = FALSE,
+                           colour = "#005EB8", chart_title = NULL, low_base = 100) {
   validate(need(nrow(data) > 0, "No data for current filter selection!"))
 
   column_prefix <- columns
   if (cols_start_with) columns <- names(data %>% select(starts_with(columns)))
+
+  filter_out <- c("", "Undisclosed")
+  if (keep_undisclosed) filter_out <- c("")
 
   options <- data %>%
     select(
@@ -1479,7 +1497,7 @@ horizontal_bar <- function(data, columns, month_col, cols_start_with = FALSE,
       names_to = "question_column",
       values_drop_na = TRUE
     ) %>%
-    filter(!.data$value %in% c("", "Undisclosed")) %>%
+    filter(!.data$value %in% filter_out) %>%
     mutate(
       question_column = case_when(
         length(unique(.data$question_column)) == 1 ~ .data$value,

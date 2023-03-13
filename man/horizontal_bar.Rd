@@ -12,6 +12,7 @@ horizontal_bar(
   cols_start_with = FALSE,
   arrange_desc = TRUE,
   responses,
+  keep_undisclosed = FALSE,
   colour = "#005EB8",
   chart_title = NULL,
   low_base = 100
@@ -29,6 +30,8 @@ horizontal_bar(
 \item{arrange_desc}{Boolean}
 
 \item{responses}{Variable}
+
+\item{keep_undisclosed}{Boolean}
 
 \item{colour}{Character}
 

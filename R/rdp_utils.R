@@ -710,7 +710,16 @@ create_levels <- function(data, levels_meta) {
   single_col_level_names <- setdiff(level_names$output_name, multi_col_level_names)
 
   levels <- lapply(data, unique) %>%
-    lapply(setdiff, c("", "Undisclosed"))
+    lapply(setdiff, c("", "Undisclosed")) %>%
+    lapply(sort)
+
+  check_undisclosed <- levels_meta %>%
+    transmute(
+      .data$output_name,
+      keep_undisclosed = if_else(!is.na(.data$arg7) & .data$arg7, TRUE, FALSE)
+    ) %>%
+    distinct() %>%
+    deframe()
 
   levels <- map(levels, ~ paste0("  \"", .x, "\"", " = \"", .x, "\""))
   levels <- imap(
@@ -756,6 +765,18 @@ create_levels <- function(data, levels_meta) {
   )
 
   levels <- c(levels[single_col_level_names], multi_col_levels)
+
+  levels <- imap(
+    levels,
+    ~ `if`(
+      check_undisclosed[.y],
+      {
+        c(.x, "  \"Undisclosed\" = \"Undisclosed\"")
+      },
+      .x
+    )
+  )
+
   levels <- map(levels, ~ paste0(.x, collapse = ",\n"))
   levels <- imap(levels, ~ paste0(.y, "_responses <- c(\n", .x, "\n)"))
 

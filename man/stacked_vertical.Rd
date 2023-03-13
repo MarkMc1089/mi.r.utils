@@ -11,6 +11,7 @@ stacked_vertical(
   radio_select = NULL,
   cols_start_with = TRUE,
   responses,
+  keep_undisclosed = FALSE,
   colours = NULL,
   legend_title = element_blank(),
   low_base = 100,
@@ -29,6 +30,8 @@ stacked_vertical(
 \item{cols_start_with}{Boolean}
 
 \item{responses}{Variable}
+
+\item{keep_undisclosed}{Boolean}
 
 \item{colours}{Vector of characters}
 
