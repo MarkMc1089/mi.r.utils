@@ -6,6 +6,8 @@
 \usage{
 add_page(
   app_type,
+  data_prefix,
+  accordion_menu,
   page_name,
   page_menu_name = page_name,
   backup_dirs = NULL,
@@ -15,6 +17,10 @@ add_page(
 }
 \arguments{
 \item{app_type}{Character}
+
+\item{data_prefix}{Character}
+
+\item{accordion_menu}{Boolean}
 
 \item{page_name}{Character}
 

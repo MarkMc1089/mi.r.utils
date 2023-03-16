@@ -6,6 +6,8 @@
 \usage{
 add_pages(
   app_type,
+  data_prefix,
+  accordion_menu,
   pages,
   page_menu_names = pages,
   backup_dirs = NULL,
@@ -15,6 +17,10 @@ add_pages(
 }
 \arguments{
 \item{app_type}{Character}
+
+\item{data_prefix}{Character}
+
+\item{accordion_menu}{Boolean}
 
 \item{pages}{Vector of characters}
 

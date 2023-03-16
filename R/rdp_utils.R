@@ -247,6 +247,8 @@ file_remove_line <- function(.file, .match = NA, open = FALSE) {
 #' Title
 #'
 #' @param app_type Character
+#' @param data_prefix Character
+#' @param accordion_menu Boolean
 #' @param page_name Character
 #' @param page_menu_name Character
 #' @param backup_dirs Vector of filepaths
@@ -259,9 +261,10 @@ file_remove_line <- function(.file, .match = NA, open = FALSE) {
 #' @examples \dontrun{
 #'
 #' }
-add_page <- function(app_type, page_name, page_menu_name = page_name,
-                     backup_dirs = NULL, overwrite = FALSE, open = FALSE) {
-  page_file_name <- to_snake_case(page_name)
+add_page <- function(app_type, data_prefix, accordion_menu, page_name,
+                     page_menu_name = page_name, backup_dirs = NULL,
+                     overwrite = FALSE, open = FALSE) {
+  page_file_name <- glue("{data_prefix}_{to_snake_case(page_name)}")
   page_dir <- dir_create(file.path("ui", "pages"))
   page_r <- glue("{page_dir}/{page_file_name}.R")
   server_dir <- dir_create("server")
@@ -315,18 +318,22 @@ add_page <- function(app_type, page_name, page_menu_name = page_name,
     file_insert_lines(ui_r, target, "  ### Add pages above", open = open)
   }
 
-  target <- glue(
-    "        a(class = 'navigation homeitem item', '{page_menu_name}', ",
-    "`data-value` = '{page_file_name}'),"
-  )
-  if (is.na(match(target, ui_lines))) {
-    file_insert_lines(ui_r, target, "        ### Add page links above", open = open)
+  if (!accordion_menu) {
+    target <- glue(
+      "        a(class = 'navigation homeitem item', '{page_menu_name}', ",
+      "`data-value` = '{page_file_name}'),"
+    )
+    if (is.na(match(target, ui_lines))) {
+      file_insert_lines(ui_r, target, "        ### Add page links above", open = open)
+    }
   }
 }
 
 
 #' Title
 #' @param app_type Character
+#' @param data_prefix Character
+#' @param accordion_menu Boolean
 #' @param pages Vector of characters
 #' @param page_menu_names Vector of characters
 #' @param backup_dirs Vector of filepaths
@@ -339,15 +346,51 @@ add_page <- function(app_type, page_name, page_menu_name = page_name,
 #' @examples \dontrun{
 #'
 #' }
-add_pages <- function(app_type, pages, page_menu_names = pages,
-                      backup_dirs = NULL, overwrite = FALSE, open = FALSE) {
+add_pages <- function(app_type, data_prefix, accordion_menu, pages,
+                      page_menu_names = pages, backup_dirs = NULL,
+                      overwrite = FALSE, open = FALSE) {
   walk2(
     pages,
     page_menu_names,
     add_page,
     app_type = app_type,
+    data_prefix = data_prefix,
+    accordion_menu = accordion_menu,
     backup_dirs = backup_dirs, overwrite = overwrite, open = open
   )
+
+  if (accordion_menu) {
+    ui_r <- "ui/ui.R"
+    ui_lines <- readLines(ui_r)
+
+    ui_nav_links_temp <- readLines(
+      system.file(
+        "projects", app_type, "templates", "ui", "ui_navigation_links_template.txt",
+        package = "projecthooks"
+      )
+    )
+
+    paste_lvls <- function(out, input) paste(out, input, sep = "\n")
+
+    nav_links <- map2(
+      pages,
+      page_menu_names,
+      ~ glue(
+        "a(class = 'navigation homeitem item', '{.y}', ",
+        "`data-value` = '{data_prefix}_{to_snake_case(.x)}'),"
+      )
+    ) %>%
+      reduce(paste_lvls)
+
+    nav_links <- glue(
+      glue_collapse(ui_nav_links_temp, sep = "\n            "),
+      .trim = FALSE
+    )
+
+    if (is.na(match(nav_links, ui_lines))) {
+      file_insert_lines(ui_r, nav_links, "        ### Add page links above", open = open)
+    }
+  }
 }
 
 
