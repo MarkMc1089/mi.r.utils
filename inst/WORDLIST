@@ -73,6 +73,7 @@ parseable
 plotly
 pre
 prettyCheckboxGroup
+prettyOptions
 projecthooks
 purrr
 repo
@@ -84,6 +85,7 @@ rstudioapi
 ru
 selectInput
 shinyBS
+shinyServer
 shinyWidgets
 sig
 sigtest
@@ -105,6 +107,8 @@ tooltip
 TW
 UI
 uk
+updatePrettyCheckboxGroup
+updatePrettyOptions
 WIP
 withr
 www
