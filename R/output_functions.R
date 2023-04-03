@@ -10,6 +10,10 @@
 #'
 #' }
 month_range_indicator <- function(month_range) {
+  if (is.null(month_range)) {
+    return("")
+  }
+
   if (month_range[1] == month_range[2]) {
     format(month_range[1], format = "%B %Y")
   } else {
