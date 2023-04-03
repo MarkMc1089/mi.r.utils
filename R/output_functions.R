@@ -914,7 +914,7 @@ group_table <- function(data, comment_column, month_col, group_select = NULL,
 stacked_vertical <- function(data, columns, month_col, radio_select = NULL,
                              cols_start_with = TRUE, responses,
                              keep_undisclosed = FALSE, colours = NULL,
-                             legend_title = element_blank(), low_base = 100,
+                             legend_title = NULL, low_base = 100,
                              show_mean = FALSE) {
   validate(need(nrow(data) > 0, "No data for current filter selection!"))
 
@@ -1039,7 +1039,7 @@ stacked_vertical <- function(data, columns, month_col, radio_select = NULL,
       geom_col() +
       labs(
         y = "Percentage of respondents (%)",
-        x = element_blank(),
+        x = NULL,
         fill = legend_title
       ) +
       scale_x_date(

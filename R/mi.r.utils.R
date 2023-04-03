@@ -25,7 +25,7 @@
 #' @importFrom sigtest nps_moe_test
 #' @importFrom DT datatable
 #' @importFrom plotly ggplotly config layout
-#' @importFrom ggplot2 ggplot aes geom_col labs element_blank scale_x_date
+#' @importFrom ggplot2 ggplot aes geom_col labs scale_x_date
 #' @importFrom ggplot2 scale_fill_manual theme_classic theme element_text
 #' @importFrom utils head
 #' @importFrom htmlwidgets JS

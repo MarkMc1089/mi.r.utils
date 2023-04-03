@@ -13,7 +13,7 @@ stacked_vertical(
   responses,
   keep_undisclosed = FALSE,
   colours = NULL,
-  legend_title = element_blank(),
+  legend_title = NULL,
   low_base = 100,
   show_mean = FALSE
 )
