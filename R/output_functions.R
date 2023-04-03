@@ -1560,7 +1560,8 @@ horizontal_bar <- function(data, columns, month_col, cols_start_with = FALSE,
     ) %>%
     hc_yAxis(
       tickInterval = 5,
-      max = max(chart$percentage)
+      max = max(chart$percentage),
+      showLastLabel = FALSE
     ) %>%
     hc_xAxis(type = "category") %>%
     hc_legend(
@@ -1670,7 +1671,8 @@ coding_horizontal_bar <- function(data, coded_column, total_column,
       data = chart,
       hcaes(
         x = !!coded_column,
-        y = round(.data$percentage)
+        y = round(.data$percentage),
+        showLastLabel = FALSE
       )
     ) %>%
     hc_yAxis(
