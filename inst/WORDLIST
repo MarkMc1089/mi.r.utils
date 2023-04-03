@@ -98,6 +98,7 @@ sv
 sw
 testthat
 th
+tibble
 tidyr
 tippy
 tooltip

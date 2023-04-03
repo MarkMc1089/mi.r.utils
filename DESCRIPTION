@@ -30,6 +30,7 @@ Imports:
     snakecase,
     stats,
     stringr,
+    tibble,
     tidyr,
     utils,
     withr,

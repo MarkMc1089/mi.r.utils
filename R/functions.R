@@ -699,6 +699,97 @@ a11yPrettyCheckboxGroup <- function(inputId, label, choices = NULL,
 }
 
 
+#' Accessibility compliant version of shinyWidgets::updatePrettyCheckboxGroup
+#'
+#' @inheritParams shinyWidgets::updatePrettyCheckboxGroup
+#'
+#' @return HTML
+#' @export
+#'
+#' @examples \dontrun{
+#'
+#' }
+# Begin Exclude Linting
+updateA11yPrettyCheckboxGroup <- function(session = getDefaultReactiveDomain(),
+                                          inputId, label = NULL, choices = NULL,
+                                          selected = NULL, inline = FALSE,
+                                          choiceNames = NULL, choiceValues = NULL,
+                                          prettyOptions = list()) {
+  # End Exclude Linting
+  updateA11yPrettyOptions(
+    session, inputId, label, choices, selected, inline, "checkbox",
+    choiceNames, choiceValues, prettyOptions
+  )
+}
+
+
+#' Accessibility compliant version of shinyWidgets:::updatePrettyOptions
+#'
+#' @param session	The session object passed to function given to shinyServer.
+#' @param inputId	The id of the input object.
+#' @param label	The label to set for the input object.
+#' @param  choices	The choices to set for the input object, updating choices will
+#'  reset parameters like status, shape, ... on the checkboxes, you can re-specify
+#'   (or change them) in argument prettyOptions.
+#' @param selected The value to set for the input object.
+#' @param inline	If TRUE, render the choices inline (i.e. horizontally).
+#' @param type One of 'checkbox' or 'radio'.
+#' @param choiceNames	The choices names to set for the input object.
+#' @param choiceValues The choices values to set for the input object.
+#' @param prettyOptions Arguments passed to prettyCheckboxGroup for styling checkboxes.
+#'  This can be needed if you update choices.
+#'
+#' @return HTML
+#' @export
+#'
+#' @examples \dontrun{
+#'
+#' }
+# Begin Exclude Linting
+updateA11yPrettyOptions <- function(session = getDefaultReactiveDomain(), inputId,
+                                    label = NULL, choices = NULL, selected = NULL,
+                                    inline = FALSE, type = NULL, choiceNames = NULL,
+                                    choiceValues = NULL, prettyOptions = list()) {
+  # End Exclude Linting
+  if (is.null(type)) {
+    stop("Please specify the type ('checkbox' or 'radio')")
+  }
+  args <- shinyWidgets:::normalizeChoicesArgs(
+    choices, choiceNames, choiceValues,
+    mustExist = FALSE
+  )
+  if (!is.null(selected)) {
+    selected <- as.character(selected)
+  }
+
+  options <- if (!is.null(args$choiceValues)) {
+    doRenderTags(
+      a11yGeneratePretty(
+        inputId = session$ns(inputId),
+        selected = selected,
+        inline = inline,
+        type = type,
+        choiceNames = args$choiceNames,
+        choiceValues = args$choiceValues,
+        status = prettyOptions$status %||% "default",
+        shape = prettyOptions$shape %||% "square",
+        outline = prettyOptions$outline %||% FALSE,
+        fill = prettyOptions$fill %||% FALSE,
+        thick = prettyOptions$thick %||% FALSE,
+        animation = prettyOptions$animation,
+        icon = prettyOptions$icon,
+        plain = prettyOptions$plain %||% FALSE,
+        bigger = prettyOptions$bigger %||% FALSE
+      )
+    )
+  }
+  message <- shinyWidgets:::dropNulls(
+    list(label = label, options = options, value = selected)
+  )
+  session$sendInputMessage(inputId, message)
+}
+
+
 #' Accessibility compliant version of shinyBS::bsCollapse
 #'
 #' @inheritParams shinyBS::bsCollapse
