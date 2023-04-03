@@ -1671,13 +1671,13 @@ coding_horizontal_bar <- function(data, coded_column, total_column,
       data = chart,
       hcaes(
         x = !!coded_column,
-        y = round(.data$percentage),
-        showLastLabel = FALSE
+        y = round(.data$percentage)
       )
     ) %>%
     hc_yAxis(
       tickInterval = 5,
-      max = max(chart$percentage)
+      max = max(chart$percentage),
+      showLastLabel = FALSE
     ) %>%
     hc_xAxis(type = "category") %>%
     hc_legend(
