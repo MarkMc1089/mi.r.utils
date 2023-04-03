@@ -1558,7 +1558,10 @@ horizontal_bar <- function(data, columns, month_col, cols_start_with = FALSE,
       ),
       showInLegend = TRUE
     ) %>%
-    hc_yAxis(tickInterval = 5) %>%
+    hc_yAxis(
+      tickInterval = 5,
+      max = max(chart$percentage)
+    ) %>%
     hc_xAxis(type = "category") %>%
     hc_legend(
       title = list(
@@ -1670,7 +1673,10 @@ coding_horizontal_bar <- function(data, coded_column, total_column,
         y = round(.data$percentage)
       )
     ) %>%
-    hc_yAxis(tickInterval = 5) %>%
+    hc_yAxis(
+      tickInterval = 5,
+      max = max(chart$percentage)
+    ) %>%
     hc_xAxis(type = "category") %>%
     hc_legend(
       title = list(
