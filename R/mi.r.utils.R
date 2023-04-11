@@ -32,7 +32,7 @@
 #' @importFrom utils head
 #' @importFrom htmlwidgets JS
 #' @importFrom fs dir_create
-#' @importFrom stringr str_replace str_replace_all str_split_fixed str_split
+#' @importFrom stringr str_replace str_replace_all str_split_fixed str_split str_count
 #' @importFrom snakecase to_snake_case to_sentence_case
 #' @importFrom withr with_locale
 #' @importFrom skimr skim
