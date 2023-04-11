@@ -877,12 +877,12 @@ group_table <- function(data, comment_column, month_col, group_select = NULL,
       all_of(columns)
     ) %>%
     arrange(
-      desc(!!month_col),
-      !!comment_column
+      desc(!!sym(month_col)),
+      !!sym(comment_column)
     ) %>%
-    mutate(
-      !!sym(month_col) := format(!!sym(month_col), format = "%b %Y")
-    )
+    # Remove no info comments such as ".", "-", "????" etc.
+    filter(str_count(!!sym(comment_column), "[[:alpha:]]") > 1) %>%
+    mutate(!!sym(month_col) := format(!!sym(month_col), format = "%b %Y"))
 
   colnames <- c("Month", comment_name_in_DT)
   if (!is.null(group_select)) colnames <- c(colnames, "Group")
@@ -890,7 +890,13 @@ group_table <- function(data, comment_column, month_col, group_select = NULL,
   datatable(
     table,
     rownames = FALSE,
-    colnames = colnames
+    colnames = colnames,
+    options = list(
+      pageLength = 100,
+      lengthChange = FALSE,
+      scrollY = TRUE,
+      scrollCollapse = TRUE
+    )
   )
 }
 
