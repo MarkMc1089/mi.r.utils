@@ -435,10 +435,14 @@ label <- function(label_text, ...) {
 #'
 #' }
 fluidRow_2cols_toggle_B <- function(output_fun, output_name, ...) { # Exclude Linting
-  fluidRow(
-    id = output_name,
-    div(class = "groupA col-sm-12", output_fun(glue("{output_name}_A"), ...)),
-    div(class = "groupB hidden", output_fun(glue("{output_name}_B"), ...))
+  div(
+    fluidRow(
+      id = output_name,
+      div(class = "groupA col-sm-12", output_fun(glue("{output_name}_A"), ...)),
+      div(class = "groupB hidden", output_fun(glue("{output_name}_B"), ...))
+    ),
+    br(),
+    br()
   )
 }
 

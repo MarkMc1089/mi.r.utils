@@ -17,7 +17,7 @@
 #' @importFrom dplyr mutate filter left_join case_when group_by count ungroup distinct
 #' @importFrom dplyr full_join arrange summarise all_of bind_rows n between desc
 #' @importFrom dplyr select across if_else starts_with ends_with pull add_count lag
-#' @importFrom dplyr rename_with transmute
+#' @importFrom dplyr rename_with transmute if_any rename
 #' @importFrom highcharter highchart hc_add_series hc_xAxis hc_tooltip hc_plotOptions
 #' @importFrom highcharter hc_yAxis hc_title hc_subtitle hc_legend hc_colors hcaes
 #' @importFrom lubridate %m+% %m-% now years
@@ -27,7 +27,7 @@
 #' @importFrom sigtest nps_moe_test
 #' @importFrom DT datatable
 #' @importFrom plotly ggplotly config layout
-#' @importFrom ggplot2 ggplot aes geom_col labs scale_x_date
+#' @importFrom ggplot2 ggplot aes geom_col labs scale_x_date element_blank
 #' @importFrom ggplot2 scale_fill_manual theme_classic theme element_text
 #' @importFrom utils head
 #' @importFrom htmlwidgets JS

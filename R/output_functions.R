@@ -944,6 +944,15 @@ stacked_vertical <- function(data, columns, month_col, radio_select = NULL,
       !!month_col,
       all_of(columns)
     ) %>%
+    filter(if_any(all_of(columns), ~ !(.data$. %in% filter_out)))
+
+
+
+  month_counts <- options %>%
+    count(!!sym(month_col)) %>%
+    rename(base = n)
+
+  options <- options %>%
     pivot_longer(
       -!!month_col,
       names_to = "question_column",
@@ -982,6 +991,11 @@ stacked_vertical <- function(data, columns, month_col, radio_select = NULL,
       )
   }
 
+  single_col <- if (length(columns) == 1L) TRUE else FALSE
+  y_label <- if (single_col) "Percentage of respondents (%)" else NULL
+  y_ticks <- if (single_col) NULL else element_blank()
+  y_tick_labels <- if (single_col) NULL else element_blank()
+
   ggplotly(
     options %>%
       mutate(
@@ -997,18 +1011,14 @@ stacked_vertical <- function(data, columns, month_col, radio_select = NULL,
       ) %>%
       count() %>%
       na.omit() %>%
-      group_by(
-        !!sym(month_col)
-      ) %>%
-      mutate(
-        base_for_month = sum(.data$n),
-        percentage = .data$n / sum(.data$n) * 100
-      ) %>%
+      left_join(month_counts, by = month_col) %>%
+      group_by(!!sym(month_col)) %>%
+      mutate(percentage = (.data$n / .data$base) * 100) %>%
       select(
         !!month_col,
         .data$question_column,
         .data$percentage,
-        .data$base_for_month
+        .data$base
       ) %>%
       {
         if (!isFALSE(show_mean)) {
@@ -1030,7 +1040,7 @@ stacked_vertical <- function(data, columns, month_col, radio_select = NULL,
             if (!isFALSE(show_mean)) {
               glue(
                 "{date_Ymd_to_bY(.data[[month_col]])} ",
-                "({base_for_month}{ifelse(base_for_month < low_base, '*', '')})\n",
+                "({base}{ifelse(base < low_base, '*', '')})\n",
                 "Mean score {mean}\n",
                 "{question_column}\n",
                 "{decimal_places(percentage, 0)}%"
@@ -1038,7 +1048,7 @@ stacked_vertical <- function(data, columns, month_col, radio_select = NULL,
             } else {
               glue(
                 "{date_Ymd_to_bY(.data[[month_col]])} ",
-                "({base_for_month}{ifelse(base_for_month < low_base, '*', '')})\n",
+                "({base}{ifelse(base < low_base, '*', '')})\n",
                 "{question_column}\n",
                 "{decimal_places(percentage, 0)}%"
               )
@@ -1048,7 +1058,7 @@ stacked_vertical <- function(data, columns, month_col, radio_select = NULL,
       ) +
       geom_col() +
       labs(
-        y = "Percentage of respondents (%)",
+        y = y_label,
         x = NULL,
         fill = legend_title
       ) +
@@ -1065,6 +1075,8 @@ stacked_vertical <- function(data, columns, month_col, radio_select = NULL,
       ) +
       theme_classic() +
       theme(
+        axis.ticks.y = y_ticks,
+        axis.text.y = y_tick_labels,
         axis.text.x = element_text(
           angle = 45,
           vjust = 1,
@@ -1603,7 +1615,7 @@ horizontal_bar <- function(data, columns, month_col, cols_start_with = FALSE,
         zIndex = 10000
       ),
       pointFormat = paste(
-        "<b>Percentage of group:</b> {point.y}%<br><b>Count in group: </b>{point.n}<br>"
+        "<b>Percentage:</b> {point.y}%<br><b>Base: </b>{point.n}<br>"
       ),
       valueDecimals = 0,
       backgroundColor = "#E8EDEE",
