@@ -408,8 +408,12 @@ line_chart <- function(data, measure_column, month_col, three_month_rolling = FA
   chart <- chart %>%
     mutate(
       score_sig = case_when(
-        .data$score_sig == -1 ~ "<font color = '#DA291C', size = '3'>&#x25BC;</font>",
-        .data$score_sig == +1 ~ "<font color = '#009639', size = '3'>&#x25B2;</font>",
+        .data$score_sig == -1 ~ glue(
+          "<span style = 'color: #DA291C', size = '3'>&#x25BC;</span>"
+        ),
+        .data$score_sig == +1 ~ glue(
+          "<span style = 'color: #006747', size = '3'>&#x25B2;</span>"
+        ),
         TRUE ~ ""
       ),
       maybe_lb = case_when(
