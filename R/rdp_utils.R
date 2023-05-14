@@ -969,6 +969,7 @@ add_choices <- function(choices_meta, backup_dir = NULL,
 #'
 #' @param app_type Character
 #' @param data_prefix Character
+#' @param month_col Character
 #' @param page_1 Character
 #' @param survey_doc Character
 #' @param backup_dir Filepath
@@ -981,7 +982,7 @@ add_choices <- function(choices_meta, backup_dir = NULL,
 #' @examples \dontrun{
 #'
 #' }
-create_ui_outputs_r <- function(app_type, data_prefix, page_1, survey_doc,
+create_ui_outputs_r <- function(app_type, data_prefix, month_col, page_1, survey_doc,
                                 backup_dir = NULL, overwrite = FALSE, open = FALSE) {
   server_dir <- dir_create("server")
   ui_outputs_r <- "server/ui_outputs.R"
@@ -990,7 +991,7 @@ create_ui_outputs_r <- function(app_type, data_prefix, page_1, survey_doc,
 
   ui_outputs_r_temp <- readLines(
     system.file(
-      "projects", app_type, "templates", "server", "ui_outputs.txt",
+      "projects", app_type, "templates", "server", "ui_outputs_template.txt",
       package = "projecthooks"
     )
   )
@@ -1002,6 +1003,44 @@ create_ui_outputs_r <- function(app_type, data_prefix, page_1, survey_doc,
 
   if (open) navigateToFile(ui_outputs_r)
 }
+
+
+#' Title
+#'
+#' @param app_type Character
+#' @param data_prefix Character
+#' @param month_col Character
+#'
+#' @return Used for side effects
+#' @export
+#'
+#' @examples \dontrun{
+#'
+#' }
+add_data_context_output <- function(app_type, data_prefix, month_col) {
+  ui_outputs_r_temp <- readLines(
+    system.file(
+      "projects", app_type, "templates", "server", "data_context_template.txt",
+      package = "projecthooks"
+    )
+  )
+  ui_outputs_r_temp <- c(ui_outputs_r_temp, "")
+  ui_outputs_r_temp <- glue(
+    glue_collapse(ui_outputs_r_temp, sep = "\n"),
+    .trim = FALSE
+  )
+
+  ui_outputs_r <- "server/ui_outputs.R"
+  ui_outputs_r_lines <- readLines(ui_outputs_r)
+
+  target <- glue("if(startsWith(input$page_filename, \"{data_prefix}\")) {")
+  if (is.na(match(target, ui_outputs_r_lines))) {
+    file_insert_lines(
+      ui_outputs_r, survey_doc_r_temp, "### Data context switching above"
+    )
+  }
+}
+
 
 #' Title
 #'

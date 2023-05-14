@@ -7,6 +7,7 @@
 create_ui_outputs_r(
   app_type,
   data_prefix,
+  month_col,
   page_1,
   survey_doc,
   backup_dir = NULL,
@@ -18,6 +19,8 @@ create_ui_outputs_r(
 \item{app_type}{Character}
 
 \item{data_prefix}{Character}
+
+\item{month_col}{Character}
 
 \item{page_1}{Character}
 
