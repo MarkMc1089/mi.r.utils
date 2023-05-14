@@ -1036,7 +1036,7 @@ add_data_context_output <- function(app_type, data_prefix, month_col) {
   target <- glue("if(startsWith(input$page_filename, \"{data_prefix}\")) {")
   if (is.na(match(target, ui_outputs_r_lines))) {
     file_insert_lines(
-      ui_outputs_r, survey_doc_r_temp, "### Data context switching above"
+      ui_outputs_r, ui_outputs_r_temp, "### Data context switching above"
     )
   }
 }
