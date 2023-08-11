@@ -18,7 +18,7 @@ HTML
 Style text as label
 }
 \examples{
-\dontrun{
+library(shiny)
 
-}
+label("A label", p("A paragraph"), p("Another paragraph"))
 }

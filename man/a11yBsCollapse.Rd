@@ -4,26 +4,40 @@
 \alias{a11yBsCollapse}
 \title{Accessibility compliant version of shinyBS::bsCollapse}
 \usage{
-a11yBsCollapse(id, open, ...)
+a11yBsCollapse(..., id = NULL, multiple = FALSE, open = NULL)
 }
 \arguments{
+\item{...}{\code{\link[shinyBS]{bsCollapsePanel}} elements to include in the Collapse.}
+
 \item{id}{\bold{Optional} You can use \code{input$id} in your Server logic to
 determine which panels are open, and \code{\link[shinyBS]{updateCollapse}} to open/close
 panels.}
 
+\item{multiple}{Can more than one panel be open at a time? Defaults to \code{FALSE}.}
+
 \item{open}{The \code{value}, (or if none was supplied, the \code{title}) of
 the panel(s) you want open on load.}
-
-\item{...}{\code{\link[shinyBS]{bsCollapsePanel}} elements to include in the Collapse.}
 }
 \value{
 HTML
 }
 \description{
-Accessibility compliant version of shinyBS::bsCollapse
+Rewrite of shinyWidgets::bsCollapse for accessibility fixes.
 }
 \examples{
-\dontrun{
+library(shinyBS)
 
-}
+a11yBsCollapse(
+  id = "collapseExample",
+  open = "Panel 2",
+  bsCollapsePanel(
+    "Panel 1",
+    "This is a panel with just text and has the default style."
+  ),
+  bsCollapsePanel(
+    "Panel 2",
+    "This panel is open initially and has a 'success' style.",
+    style = "success"
+  )
+)
 }

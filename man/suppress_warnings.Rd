@@ -18,11 +18,15 @@ suppress_warnings(.expr, .f, ...)
 Used for side effects
 }
 \description{
-Selectively suppress warnings using a given function to check for content in
-warning messages, or a character string to look for in the warning message
+The purpose of this is to prevent known, i.e. expected, warnings from
+appearing. This is helpful as you then know if you see red text when running
+some code that it is something unexpected!
 }
 \examples{
-\dontrun{
-
-}
+suppress_warnings({
+    as.numeric(c("18", "30", "50+", "345,678"))
+  },
+  endsWith,
+  "by coercion"
+)
 }

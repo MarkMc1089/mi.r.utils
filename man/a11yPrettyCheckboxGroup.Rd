@@ -69,10 +69,8 @@ you can use Bootstrap status like 'info', 'primary', 'danger', 'warning' or 'suc
 HTML
 }
 \description{
-Accessibility compliant version of shinyWidgets::prettyCheckboxGroup
+Rewrite of shinyWidgets::prettyCheckboxGroup for accessibility fixes.
 }
 \examples{
-\dontrun{
-
-}
+a11yPrettyCheckboxGroup("help-used", "Source of help", c("Helpdesk", "Online"))
 }

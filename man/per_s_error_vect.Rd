@@ -2,9 +2,7 @@
 % Please edit documentation in R/functions.R
 \name{per_s_error_vect}
 \alias{per_s_error_vect}
-\title{https://www.dummies.com/education/math/statistics/how-to-compare-two-population-proportions/  # Exclude Linting
-Why use 1.93? It seems this corresponds to a confidence interval of ~94.64\%.
-Should it not be 1.96?}
+\title{Create small standard error arrow if sig diff found}
 \usage{
 per_s_error_vect(base1, per1, base2, per2)
 }
@@ -21,12 +19,16 @@ per_s_error_vect(base1, per1, base2, per2)
 Character
 }
 \description{
-https://www.dummies.com/education/math/statistics/how-to-compare-two-population-proportions/  # Exclude Linting
+This is a vectorised replacement for per_s_error_small.
+You may want to avoid using this function, it is here for legacy use.
+Also, https://www.dummies.com/education/math/statistics/how-to-compare-two-population-proportions/  # Exclude Linting
 Why use 1.93? It seems this corresponds to a confidence interval of ~94.64\%.
 Should it not be 1.96?
 }
 \examples{
-\dontrun{
-
-}
+base1 <- c(100, 90)
+per1 <- c(0.5, 0.4)
+base2 <- c(110, 0.6)
+per2 <- c(120, 0.3)
+per_s_error_vect(base1, per1, base2, per2)
 }

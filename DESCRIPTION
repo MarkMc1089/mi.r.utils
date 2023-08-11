@@ -25,7 +25,6 @@ Imports:
     shiny,
     shinyBS,
     shinyWidgets,
-    sigtest,
     skimr,
     snakecase,
     stats,
@@ -37,9 +36,7 @@ Imports:
     zoo
 Suggests: 
     testthat (>= 3.0.0)
-Remotes:
-    nhsbsa-data-analytics/sigtest
 Config/testthat/edition: 3
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.2.2
+RoxygenNote: 7.2.3

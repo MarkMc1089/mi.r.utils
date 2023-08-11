@@ -18,7 +18,9 @@ HTML
 Wrap given tags in a content box
 }
 \examples{
-\dontrun{
-
-}
+content_box(
+  "A box...",
+  "...with some...",
+  "...things inside."
+)
 }

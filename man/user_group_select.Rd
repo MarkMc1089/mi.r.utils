@@ -16,7 +16,5 @@ HTML
 Create Shiny input for selecting NPS groups
 }
 \examples{
-\dontrun{
-
-}
+user_group_select("nps_group")
 }

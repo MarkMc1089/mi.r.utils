@@ -6,8 +6,8 @@
 #' @name mi.r.utils
 #'
 #' @importFrom shiny tags validateCssUnit selectInput fluidRow column tagList
-#' @importFrom shiny restoreInput need validate withTags div h2 h3 span br
-#' @importFrom shiny getDefaultReactiveDomain radioButtons
+#' @importFrom shiny restoreInput need validate withTags div h2 h3 span br p
+#' @importFrom shiny getDefaultReactiveDomain radioButtons uiOutput
 #' @importFrom glue glue glue_collapse
 #' @importFrom htmltools attachDependencies htmlDependency tagQuery HTML css
 #' @importFrom htmltools doRenderTags
@@ -22,9 +22,8 @@
 #' @importFrom highcharter hc_yAxis hc_title hc_subtitle hc_legend hc_colors hcaes
 #' @importFrom lubridate %m+% %m-% now years
 #' @importFrom stats na.omit setNames
-#' @importFrom rlang := sym as_name is_null .data as_function squash
+#' @importFrom rlang := sym as_name is_null .data squash
 #' @importFrom tidyr replace_na complete nesting spread pivot_longer
-#' @importFrom sigtest nps_moe_test
 #' @importFrom DT datatable
 #' @importFrom plotly ggplotly config layout
 #' @importFrom ggplot2 ggplot aes geom_col labs scale_x_date element_blank

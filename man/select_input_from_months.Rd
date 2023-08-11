@@ -4,14 +4,16 @@
 \alias{select_input_from_months}
 \title{Create select input with choices corresponding to months in data.}
 \usage{
-select_input_from_months(id, month_data, init_hide = FALSE)
+select_input_from_months(id, label, month_data, ...)
 }
 \arguments{
 \item{id}{Character}
 
+\item{label}{Display label for the control, or \code{NULL} for no label.}
+
 \item{month_data}{Data}
 
-\item{init_hide}{Boolean}
+\item{...}{Arguments passed to \code{selectInput()}.}
 }
 \value{
 HTML
@@ -20,7 +22,9 @@ HTML
 Create select input with choices corresponding to months in data.
 }
 \examples{
-\dontrun{
-
-}
+select_input_from_months(
+  "month-select",
+  "Month:",
+  c("2023/01/01", "2023/02/01", "2023/03/01")
+)
 }

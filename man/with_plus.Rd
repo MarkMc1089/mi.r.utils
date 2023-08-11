@@ -9,7 +9,7 @@ with_plus(x, ...)
 \arguments{
 \item{x}{Numeric}
 
-\item{...}{Character}
+\item{...}{further arguments passed to or from other methods.}
 }
 \value{
 Character
@@ -18,7 +18,5 @@ Character
 Title
 }
 \examples{
-\dontrun{
-
-}
+with_plus(3.142, digits = 2)
 }

@@ -19,10 +19,8 @@ per_s_error_small(base1, per1, base2, per2)
 Character
 }
 \description{
-Create small standard error arrow if sig diff found
+You may want to avoid using this function, it is here for legacy use.
 }
 \examples{
-\dontrun{
-
-}
+per_s_error_small(101, 0.5, 99, 0.6)
 }

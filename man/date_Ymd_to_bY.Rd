@@ -16,7 +16,5 @@ Character
 Set format of date to abbreviated month and full year.
 }
 \examples{
-\dontrun{
-
-}
+date_Ymd_to_bY(as.Date("2023/03/23"))
 }

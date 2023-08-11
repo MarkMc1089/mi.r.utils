@@ -17,10 +17,10 @@ fluidRow_2cols_toggle_B(output_fun, output_name, ...)
 HTML
 }
 \description{
-Create Shiny output widgets in 2 columns, with 2nd column initially hidden.
+This is used for the region selection functionality in MI dashboards. The 'B'
+column is toggleable, based on whether there are any regions selected for
+comparison.
 }
 \examples{
-\dontrun{
-
-}
+fluidRow_2cols_toggle_B(shiny::uiOutput, "some_output")
 }

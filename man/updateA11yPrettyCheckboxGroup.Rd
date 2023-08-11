@@ -42,10 +42,13 @@ for styling checkboxes. This can be needed if you update choices.}
 HTML
 }
 \description{
-Accessibility compliant version of shinyWidgets::updatePrettyCheckboxGroup
+Rewrite of shinyWidgets::updatePrettyCheckboxGroup for accessibility fixes.
 }
 \examples{
 \dontrun{
-
+updateA11yPrettyCheckboxGroup(
+  inputId = "help-used",
+  choices = c("Helpdesk", "Online", "Some new help channel")
+)
 }
 }
