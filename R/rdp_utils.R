@@ -715,7 +715,8 @@ pull_value <- function(.data, .property) {
 #'
 #' }
 summarise_data <- function(.data, .data_meta) {
-  with_locale(c("LC_CTYPE" = "Chinese"), {
+  # Temporarily set localisation to Chinese, so sparkline hists show correctly
+  with_locale(c("LC_CTYPE" = "zh_TW.UTF-8"), {
     suppress_warnings(
       {
         print(skim(.data))
