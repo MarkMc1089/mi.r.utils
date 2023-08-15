@@ -7,9 +7,11 @@
 month_diff(d1, d2 = NULL)
 }
 \arguments{
-\item{d1}{Date or character parseable as YMD date}
+\item{d1}{Date or character parseable as YMD date, or a 2 element vector or
+list of the same.}
 
-\item{d2}{Date or character parseable as YMD date}
+\item{d2}{Date or character parseable as YMD date, or unspecified if using a
+vector or list for d1}
 }
 \value{
 Int
@@ -18,7 +20,6 @@ Int
 Get number of months between 2 dates. A partial month counts as one month.
 }
 \examples{
-\dontrun{
-
-}
+month_diff("2023/02/28", "2023/05/01")
+month_diff(c("2023/02/28", "2023/05/01"))
 }

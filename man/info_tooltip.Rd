@@ -18,7 +18,5 @@ HTML
 Create info tooltip to be used with tippy.js
 }
 \examples{
-\dontrun{
-
-}
+info_tooltip(label("A label", shiny::uiOutput("some_output")))
 }

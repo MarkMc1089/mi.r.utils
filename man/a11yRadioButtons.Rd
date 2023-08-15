@@ -48,10 +48,8 @@ of just simple text. See Examples.}
 HTML
 }
 \description{
-Accessibility compliant Shiny radio buttons
+Rewrite of shiny::radioButtons for accessibility fixes
 }
 \examples{
-\dontrun{
-
-}
+a11yRadioButtons("help-used", "Source of help", c("Helpdesk", "Online"))
 }

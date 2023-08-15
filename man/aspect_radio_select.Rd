@@ -20,7 +20,5 @@ Create Shiny input for selecting from multiple similar aspects in stacked
 vertical charts
 }
 \examples{
-\dontrun{
-
-}
+aspect_radio_select("help-used", c("Helpdesk", "Online"))
 }

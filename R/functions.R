@@ -1,25 +1,79 @@
-
-#' Date range picker allowing for a custom minimum view, such as months only
+#' Customised date range picker
+#'
+#' Creates a pair of text inputs which, when clicked on, bring up calendars that
+#' the user can click on to select dates. This is a customised version of the
+#' `{shiny::dateRangeInput}` that allows for a minimum view, such as months
+#' only. It can also be hidden on initialisation.
 #'
 #' @param minviewmode Character such as "months" or "years".
 #' @param init_hide Whether to show the element initially, default is FALSE.
-#' @inheritParams shiny::dateRangeInput
+#' @inherit shiny::dateRangeInput
 #'
 #' @return HTML
+#'
 #' @export
 #'
 #' @examples \dontrun{
+#' library(shiny)
 #'
+#' ui <- fluidPage(
+#'   dateRangeInputWithViewMode("daterange1", "Date range:",
+#'                              start = "2001-01-01",
+#'                              end   = "2010-12-31"),
+#'
+#'   # Default start and end is the current date in the client's time zone
+#'   dateRangeInputWithViewMode("daterange2", "Date range:"),
+#'
+#'   # start and end are always specified in yyyy-mm-dd, even if the display
+#'   # format is different
+#'   dateRangeInputWithViewMode("daterange3", "Date range:",
+#'                              start  = "2001-01-01",
+#'                              end    = "2010-12-31",
+#'                              min    = "2001-01-01",
+#'                              max    = "2012-12-21",
+#'                              format = "mm/dd/yy",
+#'                              separator = " - "),
+#'
+#'   # Pass in Date objects
+#'   dateRangeInputWithViewMode("daterange4", "Date range:",
+#'                              start = Sys.Date()-10,
+#'                              end = Sys.Date()+10),
+#'
+#'   # Use different language and different first day of week
+#'   dateRangeInputWithViewMode("daterange5", "Date range:",
+#'                              language = "de",
+#'                              weekstart = 1),
+#'
+#'   # Start with decade view instead of default month view
+#'   dateRangeInputWithViewMode("daterange6", "Date range:",
+#'                              startview = "decade"),
+#'
+#'   # Set the minimum viewmode to days
+#'   dateRangeInputWithViewMode("daterange7", "Date range:",
+#'                              minviewmode = "days")
+#' )
+#'
+#' shinyApp(ui, server = function(input, output) { })
 #' }
 # Begin Exclude Linting
-dateRangeMonthsInput <- function(inputId, label = NULL, start = NULL, end = NULL,
-                                 min = NULL, max = NULL, format = "yyyy-mm-dd",
-                                 startview = "month", minviewmode = "months",
-                                 weekstart = 0, language = "en", separator = " to ",
-                                 width = NULL, init_hide = FALSE, autoclose = TRUE) {
+dateRangeInputWithViewMode <- function(inputId,
+                                       label = NULL,
+                                       start = NULL,
+                                       end = NULL,
+                                       min = NULL,
+                                       max = NULL,
+                                       format = "yyyy-mm-dd",
+                                       startview = "month",
+                                       minviewmode = "months",
+                                       weekstart = 0,
+                                       language = "en",
+                                       separator = " to ",
+                                       width = NULL,
+                                       init_hide = FALSE,
+                                       autoclose = TRUE) {
   # End Exclude Linting
-  # If start and end are date objects, convert to a string with yyyy-mm-dd format
-  # Same for min and max
+  # If start and end are date objects, convert to a string with yyyy-mm-dd
+  # format Same for min and max
   if (inherits(start, "Date")) start <- format(start, "%Y-%m-%d")
   if (inherits(end, "Date")) end <- format(end, "%Y-%m-%d")
   if (inherits(min, "Date")) min <- format(min, "%Y-%m-%d")
@@ -37,7 +91,7 @@ dateRangeMonthsInput <- function(inputId, label = NULL, start = NULL, end = NULL
         maybe_hide
       },
       controlLabel(inputId, label),
-      # input-daterange class is needed for dropdown behavior
+      # input-daterange class is needed for dropdown behaviour
       div(
         class = "input-daterange input-group",
         tags$input(
@@ -48,7 +102,7 @@ dateRangeMonthsInput <- function(inputId, label = NULL, start = NULL, end = NULL
           `data-date-weekstart` = weekstart,
           `data-date-format` = format,
           `data-date-start-view` = startview,
-          `data-date-min-view-mode` = minviewmode, # added manually
+          `data-date-min-view-mode` = minviewmode,
           `data-min-date` = min,
           `data-max-date` = max,
           `data-initial-date` = start,
@@ -63,7 +117,7 @@ dateRangeMonthsInput <- function(inputId, label = NULL, start = NULL, end = NULL
           `data-date-weekstart` = weekstart,
           `data-date-format` = format,
           `data-date-start-view` = startview,
-          `data-date-min-view-mode` = minviewmode, # added manually
+          `data-date-min-view-mode` = minviewmode,
           `data-min-date` = min,
           `data-max-date` = max,
           `data-initial-date` = end,
@@ -75,34 +129,68 @@ dateRangeMonthsInput <- function(inputId, label = NULL, start = NULL, end = NULL
   )
 }
 
-`%AND%` <- function(x, y) { # Exclude Linting
-  if (!is.null(x) && !is.na(x)) {
-    if (!is.null(y) && !is.na(y)) {
-      return(y)
+
+#' Helper that will return NULL if at least one of LHS and RHS is NA or NULL, or
+#' it will return the RHS otherwise.
+#'
+#' @param LHS Anything
+#' @param RHS Anything
+#'
+#' @return RHS or NULL
+#'
+#' @export
+#'
+#' @examples
+#' 1 %AND% 1:3   # 1 2 3
+#' NA %AND% 1:3 # NULL
+`%AND%` <- function(LHS, RHS) { # Exclude Linting
+  if (!all(is.null(LHS)) && !all(is.na(LHS))) {
+    if (!all(is.null(RHS)) && !all(is.na(RHS))) {
+      return(RHS)
     }
   }
   return(NULL)
 }
 
+#' Construct accessible label
+#'
+#' @param controlName Character, id of an html tag
+#' @param label Character, displayed label
+#'
+#' @return HTML for label or NULL when label is NULL
+#'
+#' @export
+#'
+#' @examples
+#' controlLabel("my_id", "My label:")
 controlLabel <- function(controlName, label) { # Exclude Linting
-  if (!is.null(label)) {
+  if (!is.null(controlName) & !is.na(controlName)) {
     label %AND%
       label(class = "control-label", `for` = controlName, label)
-  }
+  } else NULL
 }
 
-# the datePickerDependency is taken from
-# https://github.com/rstudio/shiny/blob/master/R/input-date.R
+
+#' Customised dependency based on `shiny:::datePickerDependency`
+#'
+#' Customised version of
+#' https://github.com/rstudio/shiny/blob/master/R/input-date.R
+#'
+#' @return An object that can be included in a list of dependencies passed to
+#'   `htmltools::attachDependencies()`.
+#'
+#' @noRd
 datePickerDependency <- htmlDependency( # Exclude Linting
   "bootstrap-datepicker", "1.6.4", c(href = "shared/datepicker"),
   script = "js/bootstrap-datepicker.min.js",
   stylesheet = "css/bootstrap-datepicker3.min.css",
-  # Need to enable noConflict mode. See https://github.com/rstudio/shiny/issues/1346.
+  # Need to enable noConflict mode. See
+  # https://github.com/rstudio/shiny/issues/1346.
   head = "<script>
            (function() {
-           var datepicker = $.fn.datepicker.noConflict();
-           $.fn.bsDatepicker = datepicker;
-           $.fn.bsDatepicker.defaults.autoclose = true;
+             var datepicker = $.fn.datepicker.noConflict();
+             $.fn.bsDatepicker = datepicker;
+             $.fn.bsDatepicker.defaults.autoclose = true;
            })();
          </script>"
 )
@@ -112,24 +200,22 @@ datePickerDependency <- htmlDependency( # Exclude Linting
 #'
 #' @param id Character
 #' @param month_data Data
-#' @param init_hide Boolean
+#' @inheritParams shiny::selectInput
 #'
 #' @return HTML
+#'
 #' @export
 #'
-#' @examples \dontrun{
-#'
-#' }
-select_input_from_months <- function(id, month_data, init_hide = FALSE) {
-  maybe_hide <- if (init_hide) {
-    "display: none; "
-  } else {
-    ""
-  }
-
-  s <- selectInput(
+#' @examples
+#' select_input_from_months(
+#'   "month-select",
+#'   "Month:",
+#'   c("2023/01/01", "2023/02/01", "2023/03/01")
+#' )
+select_input_from_months <- function(id, label, month_data, ...) {
+  selectInput(
     id,
-    "",
+    label,
     c(setNames(
       as.character(
         sort(
@@ -145,24 +231,20 @@ select_input_from_months <- function(id, month_data, init_hide = FALSE) {
       )
     )),
   )
-
-  s$attribs[["style"]] <- maybe_hide
-
-  s
 }
+
 
 # Prepend + symbol to numbers
 #' Title
 #'
 #' @param x Numeric
-#' @param ... Character
+#' @inheritParams base::format
 #'
 #' @return Character
 #' @export
 #'
-#' @examples \dontrun{
-#'
-#' }
+#' @examples
+#' with_plus(3.142, digits = 2)
 with_plus <- function(x, ...) {
   if (x > 0) {
     sprintf(
@@ -175,8 +257,20 @@ with_plus <- function(x, ...) {
 }
 
 
-# Use like x %||% y. If x is null, return y. If x is not null, return x.
-`%||%` <- function(x, y) if (is_null(x)) y else x
+#' Helper that is similar to COALESCE in SQL. Will return LHS if it is not NULL
+#' or NA. It will return the RHS otherwise.
+#'
+#' @param LHS Anything
+#' @param RHS Anything
+#'
+#' @return LHS or RHS
+#'
+#' @noRd
+#'
+#' @examples
+#' 1 %||% 2   # 1
+#' NA %||% 2 # 2
+`%||%` <- function(LHS, RHS) if (is.null(LHS)) RHS else LHS
 
 
 #' Set number of decimal places of number and return as char.
@@ -187,9 +281,8 @@ with_plus <- function(x, ...) {
 #' @return Character
 #' @export
 #'
-#' @examples \dontrun{
-#'
-#' }
+#' @examples
+#' decimal_places(3.1, 3)
 decimal_places <- function(x, k) {
   trimws(format(round(x, k), nsmall = k))
 }
@@ -202,9 +295,8 @@ decimal_places <- function(x, k) {
 #' @return Character
 #' @export
 #'
-#' @examples \dontrun{
-#'
-#' }
+#' @examples
+#' date_Ymd_to_bY(as.Date("2023/03/23"))
 date_Ymd_to_bY <- function(date_to_format) { # Exclude Linting
   format(date_to_format, format = "%b %Y")
 }
@@ -212,19 +304,21 @@ date_Ymd_to_bY <- function(date_to_format) { # Exclude Linting
 
 #' Get number of months between 2 dates. A partial month counts as one month.
 #'
-#' @param d1 Date or character parseable as YMD date
-#' @param d2 Date or character parseable as YMD date
+#' @param d1 Date or character parseable as YMD date, or a 2 element vector or
+#'   list of the same.
+#' @param d2 Date or character parseable as YMD date, or unspecified if using a
+#'   vector or list for d1
 #'
 #' @return Int
 #' @export
 #'
-#' @examples \dontrun{
-#'
-#' }
+#' @examples
+#' month_diff("2023/02/28", "2023/05/01")
+#' month_diff(c("2023/02/28", "2023/05/01"))
 month_diff <- function(d1, d2 = NULL) {
   if (is.null(d2)) {
-    d2 <- d1[2]
-    d1 <- d1[1]
+    d2 <- d1[[2]]
+    d1 <- d1[[1]]
   }
 
   abs(12 * (as.yearmon(as.Date(d1)) - as.yearmon(as.Date(d2))))
@@ -242,18 +336,23 @@ month_diff <- function(d1, d2 = NULL) {
 #' @return colorRampPalette
 #' @export
 #'
-#' @examples \dontrun{
-#'
-#' }
+#' @examples
+#' colour_ramp(3)
 colour_ramp <- function(n_colours, first = "#003087", last = "#FFFFFF",
                         include_white = FALSE) {
   palette <- colorRampPalette(c(first, last))
 
-  if (include_white) c(palette(n_colours + 1)) else c(palette(n_colours + 1)[1:n_colours])
+  if (include_white) {
+    c(palette(n_colours + 1))
+  } else {
+    c(palette(n_colours + 1)[1:n_colours])
+  }
 }
 
 
 #' Create large standard error arrow if sig diff found
+#'
+#' You may want to avoid using this function, it is here for legacy use.
 #'
 #' @param base1 Int
 #' @param per1 Numeric
@@ -263,19 +362,14 @@ colour_ramp <- function(n_colours, first = "#003087", last = "#FFFFFF",
 #' @return Character
 #' @export
 #'
-#' @examples \dontrun{
-#'
-#' }
+#' @examples
+#' per_s_error(101, 0.5, 99, 0.6)
 per_s_error <- function(base1, per1, base2, per2) {
   # Return immediately if any arg is NA
   if (any(is.na(c(base1, per1, base2, per2)))) {
     return("")
   }
 
-  base1 <- base1
-  per1 <- per1
-  base2 <- base2
-  per2 <- per2
   pooled_per <-
     ((base1 * per1 / 100) + (base2 * per2 / 100)) / (base1 + base2)
   s_error <-
@@ -292,7 +386,11 @@ per_s_error <- function(base1, per1, base2, per2) {
 }
 
 
-#' https://www.dummies.com/education/math/statistics/how-to-compare-two-population-proportions/  # Exclude Linting
+#' Create small standard error arrow if sig diff found
+#'
+#' This is a vectorised replacement for per_s_error_small.
+#' You may want to avoid using this function, it is here for legacy use.
+#' Also, https://www.dummies.com/education/math/statistics/how-to-compare-two-population-proportions/  # Exclude Linting
 #' Why use 1.93? It seems this corresponds to a confidence interval of ~94.64%.
 #' Should it not be 1.96?
 #'
@@ -304,9 +402,12 @@ per_s_error <- function(base1, per1, base2, per2) {
 #' @return Character
 #' @export
 #'
-#' @examples \dontrun{
-#'
-#' }
+#' @examples
+#' base1 <- c(100, 90)
+#' per1 <- c(0.5, 0.4)
+#' base2 <- c(110, 0.6)
+#' per2 <- c(120, 0.3)
+#' per_s_error_vect(base1, per1, base2, per2)
 per_s_error_vect <- function(base1, per1, base2, per2) {
   if (anyNA(c(base1, per1, base2, per2))) {
     return("")
@@ -330,6 +431,8 @@ per_s_error_vect <- function(base1, per1, base2, per2) {
 
 #' Create small standard error arrow if sig diff found
 #'
+#' You may want to avoid using this function, it is here for legacy use.
+#'
 #' @param base1 Int
 #' @param per1 Numeric
 #' @param base2 Int
@@ -338,9 +441,8 @@ per_s_error_vect <- function(base1, per1, base2, per2) {
 #' @return Character
 #' @export
 #'
-#' @examples \dontrun{
-#'
-#' }
+#' @examples
+#' per_s_error_small(101, 0.5, 99, 0.6)
 per_s_error_small <- function(base1, per1, base2, per2) {
   # Return immediately if any arg is NA
   if (any(is.na(c(base1, per1, base2, per2)))) {
@@ -376,9 +478,12 @@ per_s_error_small <- function(base1, per1, base2, per2) {
 #' @return HTML
 #' @export
 #'
-#' @examples \dontrun{
-#'
-#' }
+#' @examples
+#' content_box(
+#'   "A box...",
+#'   "...with some...",
+#'   "...things inside."
+#' )
 content_box <- function(title, ...) {
   div(
     class = "sixteen wide column",
@@ -408,9 +513,10 @@ content_box <- function(title, ...) {
 #' @return HTML
 #' @export
 #'
-#' @examples \dontrun{
+#' @examples
+#' library(shiny)
 #'
-#' }
+#' label("A label", p("A paragraph"), p("Another paragraph"))
 label <- function(label_text, ...) {
   div(
     style = glue(
@@ -424,6 +530,10 @@ label <- function(label_text, ...) {
 
 #' Create Shiny output widgets in 2 columns, with 2nd column initially hidden.
 #'
+#' This is used for the region selection functionality in MI dashboards. The 'B'
+#' column is toggleable, based on whether there are any regions selected for
+#' comparison.
+#'
 #' @param output_fun Function
 #' @param output_name Character
 #' @param ... Additional args passed to output_fun
@@ -431,9 +541,8 @@ label <- function(label_text, ...) {
 #' @return HTML
 #' @export
 #'
-#' @examples \dontrun{
-#'
-#' }
+#' @examples
+#' fluidRow_2cols_toggle_B(shiny::uiOutput, "some_output")
 fluidRow_2cols_toggle_B <- function(output_fun, output_name, ...) { # Exclude Linting
   div(
     fluidRow(
@@ -454,9 +563,8 @@ fluidRow_2cols_toggle_B <- function(output_fun, output_name, ...) { # Exclude Li
 #' @return HTML
 #' @export
 #'
-#' @examples \dontrun{
-#'
-#' }
+#' @examples
+#' user_group_select("nps_group")
 user_group_select <- function(id) {
   fluidRow(
     column(9),
@@ -482,11 +590,10 @@ user_group_select <- function(id) {
 #' @return HTML
 #' @export
 #'
-#' @examples \dontrun{
-#'
-#' }
+#' @examples
+#' aspect_radio_select("help-used", c("Helpdesk", "Online"))
 aspect_radio_select <- function(id, choices) {
-  radioButtons(
+  a11yRadioButtons(
     id,
     "Aspect",
     choices = choices,
@@ -503,11 +610,9 @@ aspect_radio_select <- function(id, choices) {
 #' @return HTML
 #' @export
 #'
-#' @examples \dontrun{
-#'
-#' }
-info_tooltip <- function(content,
-                         style = NULL) {
+#' @examples
+#' info_tooltip(label("A label", shiny::uiOutput("some_output")))
+info_tooltip <- function(content, style = NULL) {
   if (is.null(style)) {
     style <- glue(
       "display: inline; padding-left: 1px; font-size: 1 rem; font-weight: 400"
@@ -525,24 +630,24 @@ info_tooltip <- function(content,
 
 #' Accessibility compliant Shiny radio buttons
 #'
+#' Rewrite of shiny::radioButtons for accessibility fixes
+#'
 #' @inheritParams shiny::radioButtons
 #'
 #' @return HTML
 #' @export
 #'
-#' @examples \dontrun{
-#'
-#' }
-# Begin Exclude Linting
+#' @examples
+#' a11yRadioButtons("help-used", "Source of help", c("Helpdesk", "Online"))
 a11yRadioButtons <- function(inputId, label, choices = NULL, selected = NULL,
                              inline = FALSE, width = NULL, choiceNames = NULL,
                              choiceValues = NULL) {
   # End Exclude Linting
-  args <- shiny:::normalizeChoicesArgs(choices, choiceNames, choiceValues)
+  args <- do.call(":::", list("shiny", "normalizeChoicesArgs"))(choices, choiceNames, choiceValues)
   selected <- restoreInput(id = inputId, default = selected)
   selected <- if (is.null(selected)) args$choiceValues[[1]] else as.character(selected)
   if (length(selected) > 1) stop("The 'selected' argument must be of length 1")
-  options <- shiny:::generateOptions(
+  options <- do.call(":::", list("shiny", "generateOptions"))(
     inputId, selected, inline, "radio", args$choiceNames, args$choiceValues
   )
   divClass <- "form-group shiny-input-radiogroup shiny-input-container" # Exclude Linting
@@ -562,15 +667,14 @@ a11yRadioButtons <- function(inputId, label, choices = NULL, selected = NULL,
 
 #' Accessibility compliant version of shinyWidgets:::generatePretty
 #'
+#' Rewrite of shinyWidgets:::generatePretty for accessibility fixes.
+#'
 #' @param type Type of input, such as checkbox
 #' @inheritParams shinyWidgets::prettyCheckboxGroup
 #'
 #' @return HTML
-#' @export
 #'
-#' @examples \dontrun{
-#'
-#' }
+#' @noRd
 # Begin Exclude Linting
 a11yGeneratePretty <- function(inputId, selected, inline, type = "checkbox",
                                choiceNames, choiceValues, status = "primary",
@@ -579,7 +683,7 @@ a11yGeneratePretty <- function(inputId, selected, inline, type = "checkbox",
                                plain = FALSE, bigger = FALSE) {
   # End Exclude Linting
   if (!is.null(icon)) {
-    icon <- shinyWidgets:::validateIcon(icon)
+    icon <- do.call(":::", list("shinyWidgets", "validateIcon"))(icon)
     icon$attribs$class <- paste("icon", icon$attribs$class)
   }
   options <- mapply(
@@ -657,14 +761,15 @@ a11yGeneratePretty <- function(inputId, selected, inline, type = "checkbox",
 
 #' Accessibility compliant version of shinyWidgets::prettyCheckboxGroup
 #'
+#' Rewrite of shinyWidgets::prettyCheckboxGroup for accessibility fixes.
+#'
 #' @inheritParams shinyWidgets::prettyCheckboxGroup
 #'
 #' @return HTML
 #' @export
 #'
-#' @examples \dontrun{
-#'
-#' }
+#' @examples
+#' a11yPrettyCheckboxGroup("help-used", "Source of help", c("Helpdesk", "Online"))
 # Begin Exclude Linting
 a11yPrettyCheckboxGroup <- function(inputId, label, choices = NULL,
                                     selected = NULL, status = "default",
@@ -682,7 +787,9 @@ a11yPrettyCheckboxGroup <- function(inputId, label, choices = NULL,
   if (is.null(choices) && is.null(choiceNames) && is.null(choiceValues)) {
     choices <- character(0)
   }
-  args <- shinyWidgets:::normalizeChoicesArgs(choices, choiceNames, choiceValues)
+  args <- do.call(":::", list("shinyWidgets", "normalizeChoicesArgs"))(
+    choices, choiceNames, choiceValues
+  )
   selected <- restoreInput(id = inputId, default = selected)
   if (!is.null(selected)) selected <- as.character(selected)
   options <- a11yGeneratePretty(
@@ -699,11 +806,13 @@ a11yPrettyCheckboxGroup <- function(inputId, label, choices = NULL,
     class = divClass,
     tags$fieldset(tags$legend(style = "display: none;", label), options)
   )
-  shinyWidgets:::attachShinyWidgetsDep(checkgroupTag, "pretty")
+  do.call(":::", list("shinyWidgets", "attachShinyWidgetsDep"))(checkgroupTag, "pretty")
 }
 
 
 #' Accessibility compliant version of shinyWidgets::updatePrettyCheckboxGroup
+#'
+#' Rewrite of shinyWidgets::updatePrettyCheckboxGroup for accessibility fixes.
 #'
 #' @inheritParams shinyWidgets::updatePrettyCheckboxGroup
 #'
@@ -711,7 +820,10 @@ a11yPrettyCheckboxGroup <- function(inputId, label, choices = NULL,
 #' @export
 #'
 #' @examples \dontrun{
-#'
+#' updateA11yPrettyCheckboxGroup(
+#'   inputId = "help-used",
+#'   choices = c("Helpdesk", "Online", "Some new help channel")
+#' )
 #' }
 # Begin Exclude Linting
 updateA11yPrettyCheckboxGroup <- function(session = getDefaultReactiveDomain(),
@@ -729,6 +841,8 @@ updateA11yPrettyCheckboxGroup <- function(session = getDefaultReactiveDomain(),
 
 #' Accessibility compliant version of shinyWidgets:::updatePrettyOptions
 #'
+#' Rewrite of shinyWidgets:::updatePrettyOptions for accessibility fixes.
+#'
 #' @param session	The session object passed to function given to shinyServer.
 #' @param inputId	The id of the input object.
 #' @param label	The label to set for the input object.
@@ -744,11 +858,8 @@ updateA11yPrettyCheckboxGroup <- function(session = getDefaultReactiveDomain(),
 #'  This can be needed if you update choices.
 #'
 #' @return HTML
-#' @export
 #'
-#' @examples \dontrun{
-#'
-#' }
+#' @noRd
 # Begin Exclude Linting
 updateA11yPrettyOptions <- function(session = getDefaultReactiveDomain(), inputId,
                                     label = NULL, choices = NULL, selected = NULL,
@@ -758,7 +869,7 @@ updateA11yPrettyOptions <- function(session = getDefaultReactiveDomain(), inputI
   if (is.null(type)) {
     stop("Please specify the type ('checkbox' or 'radio')")
   }
-  args <- shinyWidgets:::normalizeChoicesArgs(
+  args <- do.call(":::", list("shinyWidgets", "normalizeChoicesArgs"))(
     choices, choiceNames, choiceValues,
     mustExist = FALSE
   )
@@ -787,7 +898,7 @@ updateA11yPrettyOptions <- function(session = getDefaultReactiveDomain(), inputI
       )
     )
   }
-  message <- shinyWidgets:::dropNulls(
+  message <- do.call(":::", list("shinyWidgets", "dropNulls"))(
     list(label = label, options = options, value = selected)
   )
   session$sendInputMessage(inputId, message)
@@ -796,18 +907,34 @@ updateA11yPrettyOptions <- function(session = getDefaultReactiveDomain(), inputI
 
 #' Accessibility compliant version of shinyBS::bsCollapse
 #'
+#' Rewrite of shinyWidgets::bsCollapse for accessibility fixes.
+#'
 #' @inheritParams shinyBS::bsCollapse
 #'
 #' @return HTML
 #' @export
 #'
-#' @examples \dontrun{
+#' @examples
+#' library(shinyBS)
 #'
-#' }
-a11yBsCollapse <- function(id, open, ...) { # Exclude Linting
+#' a11yBsCollapse(
+#'   id = "collapseExample",
+#'   open = "Panel 2",
+#'   bsCollapsePanel(
+#'     "Panel 1",
+#'     "This is a panel with just text and has the default style."
+#'   ),
+#'   bsCollapsePanel(
+#'     "Panel 2",
+#'     "This panel is open initially and has a 'success' style.",
+#'     style = "success"
+#'   )
+#' )
+a11yBsCollapse <- function(..., id = NULL, multiple = FALSE, open = NULL) { # Exclude Linting
   tagQuery(
     bsCollapse(
       id = id,
+      multiple = multiple,
       open = open,
       ...
     )
@@ -823,6 +950,10 @@ a11yBsCollapse <- function(id, open, ...) { # Exclude Linting
 #' Selectively suppress warnings using a given function to check for content in
 #' warning messages, or a character string to look for in the warning message
 #'
+#' The purpose of this is to prevent known, i.e. expected, warnings from
+#' appearing. This is helpful as you then know if you see red text when running
+#' some code that it is something unexpected!
+#'
 #' @param .expr Code
 #' @param .f Function or character string
 #' @param ... Vector of characters
@@ -830,18 +961,87 @@ a11yBsCollapse <- function(id, open, ...) { # Exclude Linting
 #' @return Used for side effects
 #' @export
 #'
-#' @examples \dontrun{
-#'
-#' }
+#' @examples
+#' suppress_warnings({
+#'     as.numeric(c("18", "30", "50+", "345,678"))
+#'   },
+#'   endsWith,
+#'   "by coercion"
+#' )
 suppress_warnings <- function(.expr, .f, ...) {
   eval.parent(substitute(
     withCallingHandlers(.expr, warning = function(w) {
       cm <- conditionMessage(w)
-      cond <-
-        if (is.character(.f)) grepl(.f, cm) else as_function(.f)(cm, ...)
+      cond <- if (is.character(.f)) grepl(.f, cm) else .f(cm, ...)
       if (cond) {
         invokeRestart("muffleWarning")
       }
     })
   ))
+}
+
+
+#' Calculate whether NPS score has significantly changed between 2 samples.
+#'
+#' @description A margin of error is calculated for each sample, from the number
+#' of promoters, neutrals (i.e. passives) and detractors. The standard error of
+#' their difference is estimated using the Pythagorean formula, and the absolute
+#' difference of the two samples is compared to this multiplied by the critical
+#' value (aka z*-value).
+#'
+#' The return value is in (-1, 0, +1), according to whether a significant
+#' decrease is found, no significant change, or a significant increase,
+#' respectively. If the total for a sample is 0, then 0 is returned.
+#'
+#' Formula is based on the one found in this blog post:
+#' (https://www.genroe.com/blog/how-to-calculate-margin-of-error-and-other-stats-for-nps/5994).
+#'
+#' @param p_0 Number of Promoters in latest sample
+#' @param n_0 Number of Neutrals in latest sample
+#' @param d_0 Number of Detractors in latest sample
+#' @param p_1 Number of Promoters in oldest sample
+#' @param n_1 Number of Neutrals in oldest sample
+#' @param d_1 Number of Detractors in oldest sample
+#' @param z_val Critical value multiplier; 1.96 by default for a 95% confidence
+#' interval. See [this table](http://www.ltcconline.net/greenl/courses/201/estimation/smallConfLevelTable.htm)
+#' for further values of z_val for common confidence intervals.
+#'
+#' @return A value in (-1, 0, +1); see notes above.
+#' @export
+#'
+#' @examples
+#' # Test with a 99% confidence interval
+#' nps_moe_test(123, 456, 789, 321, 654, 987, z_val = 2.58)
+nps_moe_test <- function(p_0, n_0, d_0,
+                         p_1, n_1, d_1,
+                         z_val = 1.96) {
+  if (NA %in% c(p_0, n_0, d_0, p_1, n_1, d_1)) {
+    return(0)
+  }
+
+  t_0 <- p_0 + n_0 + d_0
+  if (t_0 == 0) {
+    return(0)
+  }
+  nps_0 <- (p_0 - d_0) / t_0
+  t_1 <- p_1 + n_1 + d_1
+  if (t_1 == 0) {
+    return(0)
+  }
+  nps_1 <- (p_1 - d_1) / t_1
+
+  var_0 <- ((1 - nps_0)^2 * p_0 + nps_0^2 * n_0 + (-1 - nps_0)^2 * d_0) / t_0
+  var_1 <- ((1 - nps_1)^2 * p_1 + nps_1^2 * n_1 + (-1 - nps_1)^2 * d_1) / t_1
+
+  se_0 <- sqrt(var_0 / t_0)
+  se_1 <- sqrt(var_1 / t_1)
+
+  if (abs(nps_0 - nps_1) > z_val * sqrt(se_0^2 + se_1^2)) {
+    if (nps_0 > nps_1) {
+      return(1)
+    }
+    return(-1)
+  } else {
+    0
+  }
 }
