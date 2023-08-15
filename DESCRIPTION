@@ -1,6 +1,6 @@
 Package: mi.r.utils
 Title: Collection Of Functions, Particularly Ones Used In Shiny Apps
-Version: 0.0.0.9000
+Version: 0.0.0.9001
 Authors@R: 
     person("Mark", "McPherson", , "mark.mcpherson1@nhs.net", role = c("aut", "cre"))
 Description: Collects all the functions I use, mostly ones used in Shiny
